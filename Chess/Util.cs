@@ -4,7 +4,7 @@ namespace Chess
 {
     public class Util
     {
-        public static byte? ConvertLetterToNumber(char c)
+        public static int? ConvertLetterToNumber(char c)
         {
             switch (c)
             {
@@ -20,7 +20,7 @@ namespace Chess
             }
         }
 
-        public static char? ConvertNumberToLetter(Byte b)
+        public static char? ConvertNumberToLetter(int b)
         {
             switch (b)
             {
