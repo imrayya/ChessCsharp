@@ -2,15 +2,10 @@
 
 namespace Chess
 {
-    internal class Program
+    public class GameLoop
     {
-        public static void Main(string[] args)
+        public static Tuple<bool> Game(Board board, Player white, Player black)
         {
-            Console.WriteLine("Hello World");
-            Board board = new Board();
-            board.PrintBoard();
-            Player white = new RandomAI(board, Color.White);
-            Player black = new RandomAI(board, Color.Black);
             for (int i = 0; i < 100; i++)
             {
                 Console.WriteLine("Making move " + (i * 2));
@@ -25,6 +20,7 @@ namespace Chess
 
             Console.WriteLine("White has taken {0} ms and black has taken {1} ms", white.Stopwatch.ElapsedMilliseconds,
                 black.Stopwatch.ElapsedMilliseconds);
+            return new Tuple<bool>(true);
         }
     }
 }
