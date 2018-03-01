@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 
 namespace Chess
@@ -7,6 +9,57 @@ namespace Chess
     {
         public static bool CheckDraw(Board board)
         {
+            //Can't move
+            List<Piece> list = board.GetAllColored(board.CurrentInPlay);
+            bool canMove = false;
+            foreach (var piece in list)
+            {
+                if (board.GetAllPossibleMovesPerPiece(piece).Length != 0)
+                {
+                    canMove = true;
+                    break;
+                }
+            }
+
+            if (canMove == false) return true;
+
+            //Same move in the last 10 turns (between both)
+            var history = board.MoveHistory.Last;
+            for (int i = 0; i < 10; i++)
+            {
+            }
+
+            //if no pawn has moved in the last 75 moves or !no capture!
+            if (history.List.Count > 75)
+            {
+                bool capture = false;
+                for (int i = 0; i < 75; i++)
+                {
+                    if (history.Value.Item3)
+                    {
+                        capture = true;
+                        break;
+                    }
+
+                    history = history.Previous;
+                }
+
+                if (!capture) return true;
+            }
+
+            //Impossible Checkmate
+            /*king versus king
+             king and bishop versus king
+             king and knight versus king
+             king and bishop versus king and bishop with the bishops on the same colour. 
+                 (Any number of additional bishops of either color on the same color of 
+                 square due to underpromotion do not affect the situation.)
+             * 
+             */
+            
+            
+            //If the same position occurs for five consecutive moves by both players, the game is automatically a draw (i.e. a player does not have to claim it)
+            
             return false;
         }
 
@@ -22,6 +75,7 @@ namespace Chess
 
             return new Tuple<bool, Color>(false, Color.NoColor);
         }
+
 
         public static bool CheckCheckMate(Board board)
         {
@@ -50,7 +104,7 @@ namespace Chess
 
             //block move
             var allMovesFriendly = allMoves.FindAll(tuple => tuple.Item1.Color == king.Color);
-                        
+
 
             //eat threaten
             //checkmate

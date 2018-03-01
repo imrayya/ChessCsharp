@@ -38,6 +38,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+      <Compile Include="AI\Greedy1Ply.cs"/>
+      <Compile Include="AI\Greedy1PlyMod.cs"/>
+      <Compile Include="AI\Greedy2Ply.cs"/>
+      <Compile Include="AI\GreedyNPly.cs"/>
+      <Compile Include="AI\PieceStrength.cs"/>
+      <Compile Include="AI\RandomAI.cs"/>
     <Compile Include="Board.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="GameLoop.cs" />
@@ -46,9 +52,9 @@
     <Compile Include="Piece.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Point2D.cs" />
+      <Compile Include="Printer.cs"/>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RandomAI.cs" />
     <Compile Include="Rules.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>

@@ -20,7 +20,12 @@ namespace Chess
             }
         }
 
-        public static char? ConvertNumberToLetter(int b)
+        public static Color ConverToOpposite(Color color)
+        {
+            return color == Color.Black ? Color.White : Color.Black;
+        }
+
+    public static char? ConvertNumberToLetter(int b)
         {
             switch (b)
             {

@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Chess.AI;
 
 namespace Chess
 {
@@ -6,25 +10,26 @@ namespace Chess
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Hello World");
+            Printer.Start();
+            Printer.AddToPrinter("Hello World");
             Board board = new Board();
-            board.PrintBoard();
-            Player white = new RandomAI(board, Color.White);
-            Player black = new RandomAI(board, Color.Black);
-            for (int i = 0; i < 100; i++)
-            {
-                Console.WriteLine("Making move " + (i * 2));
-                board.Move(white.GetMove());
-                board.PrintBoard();
-                if (board.AllPieces1.FindAll(p => p is King && p.InPlay).Count != 2) break;
-                Console.WriteLine("Making move " + (i * 2 + 1));
-                board.Move(black.GetMove());
-                board.PrintBoard();
-                if (board.AllPieces1.FindAll(p => p is King && p.InPlay).Count != 2) break;
-            }
+            board.PrintBoardToPrinter();
+            Player white = new Human(board, Color.White);
+            Player black = new GreedyNPly(board, Color.Black, 5);
+            Tuple<Color, int, long, long>[] gamesResult = GameLoop.Games(board, white, black, 1, boardPrint: true);
+            var count = gamesResult.Length;
+            Printer.AddToPrinter("Number of games played: " + count);
+            var tmp = gamesResult.Count(a => a.Item1 == Color.Black);
+            Printer.AddToPrinter( tmp + " wins for black (" +(tmp/(double)count*100d)+"%) ("+black.Name+")");
+            tmp = gamesResult.Count(a => a.Item1 == Color.White);
+            Printer.AddToPrinter( tmp + " wins for white (" +(tmp/(double)count*100d)+"%) ("+white.Name+")");
+            tmp = gamesResult.Count(a => a.Item1 == Color.NoColor);
+            Printer.AddToPrinter( tmp + " draws (" +(tmp/(double)count*100d)+"%)");
+            Printer.AddToPrinter(gamesResult.Average(a => a.Item2) + " average number of turns needed");
+            Printer.AddToPrinter(gamesResult.Average(a => a.Item3) + "ms need on average for white ("+white.Name+")");
+            Printer.AddToPrinter(gamesResult.Average(a => a.Item4) + "ms need on average for black ("+black.Name+")");
 
-            Console.WriteLine("White has taken {0} ms and black has taken {1} ms", white.Stopwatch.ElapsedMilliseconds,
-                black.Stopwatch.ElapsedMilliseconds);
+            Thread.Sleep(1000);
         }
     }
 }

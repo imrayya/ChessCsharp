@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 
 namespace Chess
 {
@@ -12,13 +13,18 @@ namespace Chess
         private Piece[,] _board = new Piece[8, 8];
         private List<Piece> AllPieces = new List<Piece>();
         private int _moveNumber = 0;
+        private Color _currentInPlay = Color.White;
+
 
         private readonly Dictionary<Point2D, Point2D[]> _cachePossibleMove
             = new Dictionary<Point2D, Point2D[]>();
 
+        public Color CurrentInPlay => _currentInPlay;
         public int MoveNumber => _moveNumber;
         public List<Piece> AllPieces1 => AllPieces;
 
+        public bool PrintDebug = false;
+        
         //start, finish ,pieces taken?
         public LinkedList<Tuple<Point2D, Point2D, bool>> MoveHistory = new LinkedList<Tuple<Point2D, Point2D, bool>>();
 
@@ -75,7 +81,8 @@ namespace Chess
             {
                 for (int j = 0; j < board._board.GetLength(1); j++)
                 {
-                    _board[i, j] = board._board[i, j].Clone();
+                    if (board._board[i, j] != null)
+                        _board[i, j] = board._board[i, j].Clone();
                 }
             }
 
@@ -94,6 +101,13 @@ namespace Chess
                     AllPieces.Add(piece);
                 }
             }
+
+            _currentInPlay = board._currentInPlay;
+        }
+
+        public Board Clone()
+        {
+            return new Board(this);
         }
 
         private Piece GetAt(Point2D position) => _board[position.X, position.Y];
@@ -102,6 +116,11 @@ namespace Chess
         {
             return position.X > 7 || position.X < 0 || position.Y > 7 || position.Y < 0;
             ;
+        }
+
+        public Piece Move(Piece start, Point2D finish)
+        {
+            return Move(start.PositionPoint2D, finish);
         }
 
         /// <summary>
@@ -117,20 +136,29 @@ namespace Chess
             if (GetAllPossibleMovesPerPiece(start).Contains(finish))
             {
                 var atStart = GetAt(start);
+                if (atStart.Color != _currentInPlay)
+                {
+                    throw new IllegalMove(start, finish,"Wrong color",_currentInPlay);
+                }
                 var atEnd = GetAt(finish);
                 if (atEnd != null) atEnd.InPlay = false;
                 atStart.PositionPoint2D = finish;
                 _board[finish.X, finish.Y] = atStart;
                 _board[start.X, start.Y] = null;
-                Console.WriteLine("Moving {0} {1} from {2} to {3}. {4}", atStart.Color, atStart.Name, start.ToCoor(),
-                    finish.ToCoor(), atEnd != null ? atEnd.Color + " " + atEnd.Name + " has been taken" : "");
+                if (PrintDebug)
+                    Console.WriteLine("Moving {0} {1} from {2} to {3}. {4}", atStart.Color, atStart.Name,
+                        start.ToCoor(),
+                        finish.ToCoor(), atEnd != null ? atEnd.Color + " " + atEnd.Name + " has been taken" : "");
                 _cachePossibleMove.Clear();
                 _moveNumber++;
                 MoveHistory.AddLast(new Tuple<Point2D, Point2D, bool>(start, finish, atEnd != null));
+                _currentInPlay = Util.ConverToOpposite(_currentInPlay);
                 return atEnd;
             }
 
-            throw new IllegalMove(GetAt(start), finish);
+            PrintBoardToPrinter();
+            Printer.AddToPrinter("Failed to move " + start.ToCoor() + " to " + finish.ToCoor());
+            throw new IllegalMove(start, finish);
         }
 
         public Piece Move(Tuple<Point2D, Point2D> moves)
@@ -163,7 +191,8 @@ namespace Chess
         {
             if (_cachePossibleMove.ContainsKey(position))
             {
-                Console.WriteLine("Getting from Cache");
+                if (PrintDebug)
+                    Console.WriteLine("Getting from Cache");
                 return _cachePossibleMove[position];
             }
 
@@ -175,9 +204,8 @@ namespace Chess
 
             List<Point2D> allPossible = new List<Point2D>();
 
-            if (piece is Pawn)
+            if (piece is Pawn pawn)
             {
-                Pawn pawn = (Pawn) piece;
                 foreach (var move in pawn.MoveSet)
                 {
                     var tmp = position + move;
@@ -194,7 +222,7 @@ namespace Chess
                         allPossible.Add(tmp);
                 }
 
-                if (pawn.FirstMove)
+                if (!pawn.FirstMove)
                     foreach (var jump in pawn.FirstMoveSet)
                     {
                         var tmp = position + jump;
@@ -220,7 +248,8 @@ namespace Chess
                 }
             }
 
-            _cachePossibleMove.Add(position, allPossible.ToArray());
+            if (!_cachePossibleMove.ContainsKey(position))
+                _cachePossibleMove.Add(position, allPossible.ToArray());
             return allPossible.ToArray();
         }
 
@@ -234,6 +263,40 @@ namespace Chess
             var tmpWinner = Rules.CheckCheckMate(this);
             int numberOfBlackInPlay = AllPieces.FindAll(p => p.InPlay && p.Color == Color.Black).Count;
             int numberOfWhiteInplay = AllPieces.FindAll(p => p.InPlay && p.Color == Color.White).Count;
+        }
+
+
+        public void PrintBoardToPrinter()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append(" |");
+            for (int y = 0; y < 8; y++)
+            {
+                builder.Append(Util.ConvertNumberToLetter(y) + "|");
+            }
+
+            builder.Append("\n");
+
+
+            for (int x = 0; x < 8; x++)
+            {
+                builder.Append((x + 1) + "|");
+
+                for (int y = 0; y < 8; y++)
+                {
+                    var piece = _board[y, x];
+                    builder.Append(piece == null
+                        ? " "
+                        : piece.Color == Color.Black
+                            ? piece.Letter.ToLower()
+                            : piece.Letter.ToUpper());
+                    builder.Append("|");
+                }
+
+                builder.Append("\n");
+            }
+
+            Printer.AddToPrinter(builder.ToString());
         }
 
         public void PrintBoard()

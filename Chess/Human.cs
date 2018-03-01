@@ -1,4 +1,5 @@
 ﻿using System;
+using Chess.AI;
 
 namespace Chess
 {
@@ -10,6 +11,18 @@ namespace Chess
             _randomAi= new RandomAI(board,color);
         }
 
+        public Human(Human human) : base(human)
+        {
+            _randomAi = (RandomAI) human._randomAi.Clone(Board);
+        }
+        public Human(Human human,Board board) : base(human,board)
+        {
+            _randomAi = (RandomAI) human._randomAi.Clone(board);
+        }
+        public override Player Clone(Board board)
+        {
+            return new Human(this,board);
+        }
         public override Tuple<Point2D, Point2D> GetMove()
         {
 

@@ -21,10 +21,27 @@ namespace Chess
 
         public abstract Tuple<Point2D, Point2D> GetMove();
 
+        protected Player(Player player)
+        {
+            _board = player._board;
+            _name = player._name;
+            _color = player._color;
+        }
+
+        protected Player(Player player, Board board)
+        {
+            _board = board;
+            _name = player._name;
+            _color = player._color;
+        }
+
+        public abstract Player Clone(Board board);
+
         protected Player(Board board, Color color, string name)
         {
             _color = color;
             _board = board;
+            _name = name;
         }
     }
 }
