@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Chess.AI
 {
-    public class Greedy1Ply : Player
+    public class SimpleMonty : Player
     {
-        private RandomAI _randomAi;
+        private int _MontyGames;
 
-        public Greedy1Ply(Greedy1Ply player, Board board) : base(player, board)
+        public SimpleMonty(SimpleMonty player, Board board) : base(player, board)
         {
-            _randomAi = new RandomAI(board, player.Color);
         }
 
-        public Greedy1Ply(Board board, Color color) : base(board, color, "Greedy 1ply AI")
+        public SimpleMonty(Board board, Color color, int numberOfSimsPerMove = 50) : base(board, color, "Simple Monty")
         {
-            _randomAi = new RandomAI(board, color);
+            _MontyGames = numberOfSimsPerMove;
         }
 
         public override Tuple<Point2D, Point2D> GetMove()
@@ -25,10 +27,9 @@ namespace Chess.AI
             List<Tuple<Piece, Point2D>> possibleMoves = Board.GetAllPossibleMoves();
             possibleMoves = possibleMoves.FindAll(tuple => tuple.Item1.Color == Color);
 
-            //var newGameMoves = game.ugly_moves();
-            Tuple<Point2D, Point2D> bestMove = _randomAi.GetMove();
+            Tuple<Point2D, Point2D> bestMove = null;
             //use any negative large number
-            var bestValue = -999999;
+            var bestValue = 0d;
 
             for (var i = 0; i < possibleMoves.Count; i++)
             {
@@ -37,16 +38,15 @@ namespace Chess.AI
 
                 tmpBoard.Move(newGameMove.Item1, newGameMove.Item2);
                 //take the negative as AI plays as black
-                var boardValue = PieceStrength.EvalBoard(tmpBoard, Color, PieceStrength.StandardEval);
-                if (boardValue > bestValue)
+                Tuple<Color, int, long, long>[] games = GameLoop.Games(tmpBoard, new RandomAI(tmpBoard, Color.White),
+                    new RandomAI(tmpBoard, Color.Black), _MontyGames);
+                var wins = games.Count(a => a.Item1 == Color);
+                var currentVal = (wins / (double) _MontyGames);
+                if (currentVal > bestValue)
                 {
-                    bestValue = boardValue;
+                    bestValue = currentVal;
                     bestMove = new Tuple<Point2D, Point2D>(newGameMove.Item1.PositionPoint2D, newGameMove.Item2);
                 }
-            }
-            if(bestValue == PieceStrength.EvalBoard(Board,Color,PieceStrength.StandardEval))
-            { _stopwatch.Stop();
-                return _randomAi.GetMove();
             }
 
             _stopwatch.Stop();
@@ -55,7 +55,7 @@ namespace Chess.AI
 
         public override Player Clone(Board board)
         {
-            return new Greedy1Ply(this, board);
+            return new SimpleMonty(this, board);
         }
     }
 }
