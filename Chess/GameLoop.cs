@@ -4,12 +4,16 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Chess.Basic;
+using Chess.Basic.Pieces;
+using Chess.Player;
+using Chess.Utils;
 
 namespace Chess
 {
     public static class GameLoop
     {
-        public static Tuple<Color, int, long, long>[] Games(Board board, Player white, Player black, int numberOfGames,
+        public static Tuple<Color, int, long, long>[] Games(Board board, PlayerAbstract white, PlayerAbstract black, int numberOfGames,
             bool debugPrint = false, bool boardPrint = false)
         {
             List<Task<Tuple<Color, int, long, long>>> tasks = new List<Task<Tuple<Color, int, long, long>>>();
@@ -34,7 +38,7 @@ namespace Chess
 
 
 
-        public static Tuple<Color, int, long, long> Game(Board board, Player white, Player black,
+        public static Tuple<Color, int, long, long> Game(Board board, PlayerAbstract white, PlayerAbstract black,
             ChessListener listener)
         {
             int i = 0;
@@ -63,7 +67,7 @@ namespace Chess
                 black.Stopwatch.ElapsedMilliseconds);
         }
 
-        public static Tuple<Color, int, long, long> Game(Board board, Player white, Player black,
+        public static Tuple<Color, int, long, long> Game(Board board, PlayerAbstract white, PlayerAbstract black,
             bool printBoard = false,
             bool printDebug = false, bool printGameBNumber = false, int gameNumber = 0)
         {

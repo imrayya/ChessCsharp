@@ -1,25 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using Chess.Basic;
+using Chess.Basic.Pieces;
+using Chess.Utils;
 
-namespace Chess.AI
+namespace Chess.Player.AI
 {
-    public class GreedyNPly : Player
+    public class Greedy1PlyMod : PlayerAbstract
     {
         private RandomAI _randomAi;
 
-        private int _n;
-
-
-        public GreedyNPly(GreedyNPly player, Board board) : base(player, board)
+        public Greedy1PlyMod(Greedy1PlyMod player, Board board) : base(player, board)
         {
             _randomAi = new RandomAI(board, player.Color);
-            _n = player._n;
         }
 
-        public GreedyNPly(Board board, Color color, int n = 3) : base(board, color, "Greedy " + n +" ply AI")
+        public Greedy1PlyMod(Board board, Color color) : base(board, color, "Greedy 1.5ply Modded AI")
         {
-            if (n < 0) throw new ArgumentException("n has to be larger than 3");
-            _n = n;
             _randomAi = new RandomAI(board, color);
         }
 
@@ -42,14 +39,7 @@ namespace Chess.AI
                 var tmpBoard = Board.Clone();
 
                 tmpBoard.Move(newGameMove.Item1, newGameMove.Item2);
-                var currentColor = Color;
-                for (int j = 1; j <= _n; j++)
-                {
-                    currentColor = Util.ConverToOpposite(currentColor);
-                    tmpBoard.Move(new Greedy1Ply(tmpBoard,currentColor)
-                        .GetMove());
-                }
-
+                tmpBoard.Move(new RandomAI(tmpBoard,Util.ConverToOpposite(Color)).GetMove());
                 //take the negative as AI plays as black
                 var boardValue = PieceStrength.EvalBoard(tmpBoard, Color, PieceStrength.StandardEval);
                 if (boardValue > bestValue)
@@ -63,9 +53,9 @@ namespace Chess.AI
             return bestMove;
         }
 
-        public override Player Clone(Board board)
+        public override PlayerAbstract Clone(Board board)
         {
-            return new GreedyNPly(this, board);
+            return new Greedy1PlyMod(this, board);
         }
     }
 }

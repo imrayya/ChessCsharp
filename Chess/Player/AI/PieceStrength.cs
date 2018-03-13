@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using Chess.Basic;
+using Chess.Basic.Pieces;
 
-namespace Chess.AI
+namespace Chess.Player.AI
 {
     public class PieceStrength
     {

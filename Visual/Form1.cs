@@ -11,7 +11,10 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
 using Chess;
-using Chess.AI;
+using Chess.Basic;
+using Chess.Basic.Pieces;
+using Chess.Player;
+using Chess.Player.AI;
 using Color = System.Drawing.Color;
 
 namespace Visual
@@ -159,11 +162,12 @@ namespace Visual
             trackBar1.SetRange(0, 1);
             _current = 0;
             Board.Add(tmp);
-            Player whitePlayer = new Greedy1Ply(tmp, Chess.Color.White);
-            Player blackPlayer = new SimpleMonty(tmp, Chess.Color.Black, 50);
+            PlayerAbstract whitePlayer = new Greedy1Ply(tmp, Chess.Basic.Color.White);
+            PlayerAbstract blackPlayer = new GreedyNPly(tmp, Chess.Basic.Color.Black, 5);
             labelBlack.Text = blackPlayer.Name;
             labelWhite.Text = whitePlayer.Name;
-            GameLoop.Game(tmp, whitePlayer, blackPlayer, this);
+            var result = GameLoop.Game(tmp, whitePlayer, blackPlayer, this);
+            MessageBox.Show(result.Item1 == Chess.Basic.Color.NoColor ? "Draw" : "Winner is " + result.Item1);
         }
 
         public void MoveEvent(Board board)
@@ -179,7 +183,7 @@ namespace Visual
         {
         }
 
-        public void Winner(Chess.Color color)
+        public void Winner(Chess.Basic.Color color)
         {
             throw new NotImplementedException();
         }

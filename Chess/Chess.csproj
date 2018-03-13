@@ -38,27 +38,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AI\Greedy1Ply.cs" />
-    <Compile Include="AI\Greedy1PlyMod.cs" />
-    <Compile Include="AI\Greedy2Ply.cs" />
-    <Compile Include="AI\GreedyNPly.cs" />
-    <Compile Include="AI\PieceStrength.cs" />
-    <Compile Include="AI\RandomAI.cs" />
-    <Compile Include="AI\SimpleMonty.cs" />
-    <Compile Include="Board.cs" />
-    <Compile Include="Color.cs" />
+    <Compile Include="Player\AI\Greedy1Ply.cs" />
+    <Compile Include="Player\AI\Greedy1PlyMod.cs" />
+    <Compile Include="Player\AI\Greedy2Ply.cs" />
+    <Compile Include="Player\AI\GreedyNPly.cs" />
+    <Compile Include="Player\AI\PieceStrength.cs" />
+    <Compile Include="Player\AI\RandomAI.cs" />
+    <Compile Include="Player\AI\SimpleMonty.cs" />
+    <Compile Include="Basic\Board.cs" />
+    <Compile Include="Basic\Color.cs" />
     <Compile Include="GameLoop.cs" />
-    <Compile Include="Human.cs" />
-    <Compile Include="IllegalMove.cs" />
+    <Compile Include="Player\Human.cs" />
+    <Compile Include="Basic\IllegalMove.cs" />
     <Compile Include="ChessListener.cs" />
-    <Compile Include="Piece.cs" />
-    <Compile Include="Player.cs" />
-    <Compile Include="Point2D.cs" />
-    <Compile Include="Printer.cs" />
+    <Compile Include="Basic\Pieces\Piece.cs" />
+    <Compile Include="Basic\Pieces\PieceEnum.cs" />
+    <Compile Include="Player\PlayerAbstract.cs" />
+    <Compile Include="Basic\Point2D.cs" />
+    <Compile Include="Utils\Printer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rules.cs" />
-    <Compile Include="Util.cs" />
+    <Compile Include="Basic\Rules.cs" />
+    <Compile Include="Utils\Util.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Pieces\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

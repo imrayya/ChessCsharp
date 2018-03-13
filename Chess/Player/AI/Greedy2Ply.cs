@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using Chess.Basic;
+using Chess.Basic.Pieces;
+using Chess.Utils;
 
-namespace Chess.AI
+namespace Chess.Player.AI
 {
-    public class Greedy1PlyMod : Player
+    public class Greedy2Ply : PlayerAbstract
     {
         private RandomAI _randomAi;
 
-        public Greedy1PlyMod(Greedy1PlyMod player, Board board) : base(player, board)
+        public Greedy2Ply(Greedy2Ply player, Board board) : base(player, board)
         {
             _randomAi = new RandomAI(board, player.Color);
         }
 
-        public Greedy1PlyMod(Board board, Color color) : base(board, color, "Greedy 1.5ply Modded AI")
+        public Greedy2Ply(Board board, Color color) : base(board, color, "Greedy 2ply AI")
         {
             _randomAi = new RandomAI(board, color);
         }
@@ -36,7 +39,7 @@ namespace Chess.AI
                 var tmpBoard = Board.Clone();
 
                 tmpBoard.Move(newGameMove.Item1, newGameMove.Item2);
-                tmpBoard.Move(new RandomAI(tmpBoard,Util.ConverToOpposite(Color)).GetMove());
+                tmpBoard.Move(new Greedy1Ply(tmpBoard, Util.ConverToOpposite(Color)).GetMove());
                 //take the negative as AI plays as black
                 var boardValue = PieceStrength.EvalBoard(tmpBoard, Color, PieceStrength.StandardEval);
                 if (boardValue > bestValue)
@@ -50,9 +53,9 @@ namespace Chess.AI
             return bestMove;
         }
 
-        public override Player Clone(Board board)
+        public override PlayerAbstract Clone(Board board)
         {
-            return new Greedy1PlyMod(this, board);
+            return new Greedy2Ply(this, board);
         }
     }
 }

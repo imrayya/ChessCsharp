@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Timers;
 
-namespace Chess
+namespace Chess.Utils
 {
     public class Printer
     {

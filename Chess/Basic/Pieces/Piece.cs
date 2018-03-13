@@ -1,61 +1,61 @@
-﻿namespace Chess
+﻿namespace Chess.Basic.Pieces
 {
     public abstract class Piece
     {
+        private PieceEnum _flags;
+        private Point2D _positionPoint2D;
+        private readonly string _letter;
+        private readonly string _name;
+        private Point2D[] _moveSet;
+
+        public bool InPlay => FlagsHelper.IsInSet(_flags, PieceEnum.InPlay);
+        public bool FirstMove => FlagsHelper.IsInSet(_flags, PieceEnum.FirstMove);
+        public bool MoveRepeat => FlagsHelper.IsInSet(_flags, PieceEnum.MoveRepeat);
+        public Point2D[] MoveSet => _moveSet;
+        public string Letter => _letter;
+        public string Name => _name;
+        protected void SetMoveSet(Point2D[] moveSet) => _moveSet = moveSet;
+        public Color Color { get; }
         public Point2D PositionPoint2D
         {
             get => _positionPoint2D;
             set
             {
                 _positionPoint2D = value;
-                _firstMove = true;
+                FlagsHelper.Set(ref _flags, PieceEnum.FirstMove);
             }
         }
 
-        protected void SetMoveSet(Point2D[] moveSet)
-        {
-            _moveSet = moveSet;
-        }
-
-        private bool _firstMove = false;
-        private Point2D _positionPoint2D;
-        private readonly string _letter;
-        private readonly string _name;
-        private readonly bool _moveRepeat;
-        private Point2D[] _moveSet;
-        public bool InPlay = true;
-
-        public bool FirstMove => _firstMove;
-        public Point2D[] MoveSet => _moveSet;
-        public string Letter => _letter;
-        public string Name => _name;
-        public bool MoveRepeat => _moveRepeat;
-
-        public Color Color { get; }
-
         protected Piece(Piece piece)
         {
-            _firstMove = piece._firstMove;
+            _flags = piece._flags;
             _positionPoint2D = piece._positionPoint2D;
             _letter = piece.Letter;
             _name = piece.Name;
-            _moveRepeat = piece.MoveRepeat;
             _moveSet = piece._moveSet;
-            InPlay = piece.InPlay;
             Color = piece.Color;
         }
 
         protected Piece(Point2D positionPoint2D, Color color, string letter, string name, bool moveRepeat)
         {
             _name = name;
-            _moveRepeat = moveRepeat;
+            _flags = moveRepeat
+                ? PieceEnum.InPlay |
+                  PieceEnum.MoveRepeat
+                : PieceEnum.InPlay;
             _letter = letter;
             _positionPoint2D = positionPoint2D;
             Color = color;
         }
 
+        public Piece OutOfPlay()
+        {
+            FlagsHelper.Unset(ref _flags,PieceEnum.InPlay);
+            return this;
+        }
+
         public abstract Piece Clone();
-        
+
         public override string ToString()
         {
             return Name + " at " + _positionPoint2D.ToCoor();

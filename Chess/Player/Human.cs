@@ -1,9 +1,10 @@
 ﻿using System;
-using Chess.AI;
+using Chess.Basic;
+using Chess.Player.AI;
 
-namespace Chess
+namespace Chess.Player
 {
-    public class Human : Player
+    public class Human : PlayerAbstract
     {
         private RandomAI _randomAi;
         public Human(Board board, Color color) : base(board, color, "Human " + color)
@@ -19,7 +20,7 @@ namespace Chess
         {
             _randomAi = (RandomAI) human._randomAi.Clone(board);
         }
-        public override Player Clone(Board board)
+        public override PlayerAbstract Clone(Board board)
         {
             return new Human(this,board);
         }

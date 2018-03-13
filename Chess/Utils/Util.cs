@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Chess.Basic;
 
-namespace Chess
+namespace Chess.Utils
 {
     public class Util
     {

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using Chess.Basic.Pieces;
+using Chess.Utils;
 
-namespace Chess
+namespace Chess.Basic
 {
     public class Board
     {
@@ -14,7 +13,6 @@ namespace Chess
         private List<Piece> AllPieces = new List<Piece>();
         private int _moveNumber = 0;
         private Color _currentInPlay = Color.White;
-
 
         private readonly Dictionary<Point2D, Point2D[]> _cachePossibleMove
             = new Dictionary<Point2D, Point2D[]>();
@@ -24,7 +22,7 @@ namespace Chess
         public List<Piece> AllPieces1 => AllPieces;
 
         public bool PrintDebug = false;
-        
+
         //start, finish ,pieces taken?
         public LinkedList<Tuple<Point2D, Point2D, bool>> MoveHistory = new LinkedList<Tuple<Point2D, Point2D, bool>>();
 
@@ -115,7 +113,6 @@ namespace Chess
         private bool OutOfBounds(Point2D position)
         {
             return position.X > 7 || position.X < 0 || position.Y > 7 || position.Y < 0;
-            ;
         }
 
         public Piece Move(Piece start, Point2D finish)
@@ -136,12 +133,15 @@ namespace Chess
             if (GetAllPossibleMovesPerPiece(start).Contains(finish))
             {
                 var atStart = GetAt(start);
+                if (atStart == null)
+                    throw new IllegalMove(start, finish, "Not a Piece");
                 if (atStart.Color != _currentInPlay)
                 {
-                    throw new IllegalMove(start, finish,"Wrong color",_currentInPlay);
+                    throw new IllegalMove(start, finish, "Wrong color", _currentInPlay);
                 }
+
                 var atEnd = GetAt(finish);
-                if (atEnd != null) atEnd.InPlay = false;
+                atEnd?.OutOfPlay();
                 atStart.PositionPoint2D = finish;
                 _board[finish.X, finish.Y] = atStart;
                 _board[start.X, start.Y] = null;
@@ -165,7 +165,6 @@ namespace Chess
         {
             return Move(moves.Item1, moves.Item2);
         }
-
 
         public List<Tuple<Piece, Point2D>> GetAllPossibleMoves()
         {
@@ -264,7 +263,6 @@ namespace Chess
             int numberOfBlackInPlay = AllPieces.FindAll(p => p.InPlay && p.Color == Color.Black).Count;
             int numberOfWhiteInplay = AllPieces.FindAll(p => p.InPlay && p.Color == Color.White).Count;
         }
-
 
         public void PrintBoardToPrinter()
         {

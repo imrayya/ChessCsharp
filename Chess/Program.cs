@@ -2,7 +2,10 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Chess.AI;
+using Chess.Basic;
+using Chess.Player;
+using Chess.Player.AI;
+using Chess.Utils;
 
 namespace Chess
 {
@@ -14,8 +17,8 @@ namespace Chess
             Printer.AddToPrinter("Hello World");
             Board board = new Board();
             board.PrintBoardToPrinter();
-            Player white = new Human(board, Color.White);
-            Player black = new GreedyNPly(board, Color.Black, 5);
+            PlayerAbstract white = new Human(board, Color.White);
+            PlayerAbstract black = new GreedyNPly(board, Color.Black, 5);
             Tuple<Color, int, long, long>[] gamesResult = GameLoop.Games(board, white, black, 1, boardPrint: true);
             var count = gamesResult.Length;
             Printer.AddToPrinter("Number of games played: " + count);

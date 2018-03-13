@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Chess.Basic;
+using Chess.Basic.Pieces;
 
-namespace Chess.AI
+namespace Chess.Player.AI
 {
-    public class RandomAI : Player
+    public class RandomAI : PlayerAbstract
     {
         private Random _random;
 
@@ -27,7 +29,7 @@ namespace Chess.AI
             _random = randomAi._random;
         }
 
-        public override Player Clone(Board board)
+        public override PlayerAbstract Clone(Board board)
         {
             return new RandomAI(this, board);
         }

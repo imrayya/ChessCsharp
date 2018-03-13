@@ -1,19 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using Chess.Basic;
+using Chess.Basic.Pieces;
+using Chess.Utils;
 
-namespace Chess.AI
+namespace Chess.Player.AI
 {
-    public class Greedy1Ply : Player
+    public class GreedyNPly : PlayerAbstract
     {
         private RandomAI _randomAi;
 
-        public Greedy1Ply(Greedy1Ply player, Board board) : base(player, board)
+        private int _n;
+
+
+        public GreedyNPly(GreedyNPly player, Board board) : base(player, board)
         {
             _randomAi = new RandomAI(board, player.Color);
+            _n = player._n;
         }
 
-        public Greedy1Ply(Board board, Color color) : base(board, color, "Greedy 1ply AI")
+        public GreedyNPly(Board board, Color color, int n = 3) : base(board, color, "Greedy " + n +" ply AI")
         {
+            if (n < 0) throw new ArgumentException("n has to be larger than 3");
+            _n = n;
             _randomAi = new RandomAI(board, color);
         }
 
@@ -36,6 +45,14 @@ namespace Chess.AI
                 var tmpBoard = Board.Clone();
 
                 tmpBoard.Move(newGameMove.Item1, newGameMove.Item2);
+                var currentColor = Color;
+                for (int j = 1; j <= _n; j++)
+                {
+                    currentColor = Util.ConverToOpposite(currentColor);
+                    tmpBoard.Move(new Greedy1Ply(tmpBoard,currentColor)
+                        .GetMove());
+                }
+
                 //take the negative as AI plays as black
                 var boardValue = PieceStrength.EvalBoard(tmpBoard, Color, PieceStrength.StandardEval);
                 if (boardValue > bestValue)
@@ -44,18 +61,14 @@ namespace Chess.AI
                     bestMove = new Tuple<Point2D, Point2D>(newGameMove.Item1.PositionPoint2D, newGameMove.Item2);
                 }
             }
-            if(bestValue == PieceStrength.EvalBoard(Board,Color,PieceStrength.StandardEval))
-            { _stopwatch.Stop();
-                return _randomAi.GetMove();
-            }
 
             _stopwatch.Stop();
             return bestMove;
         }
 
-        public override Player Clone(Board board)
+        public override PlayerAbstract Clone(Board board)
         {
-            return new Greedy1Ply(this, board);
+            return new GreedyNPly(this, board);
         }
     }
 }

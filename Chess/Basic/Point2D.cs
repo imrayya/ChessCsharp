@@ -1,6 +1,7 @@
 ﻿using System;
+using Chess.Utils;
 
-namespace Chess
+namespace Chess.Basic
 {
     public struct Point2D
     {

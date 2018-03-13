@@ -1,6 +1,7 @@
 ﻿using System;
+using Chess.Basic.Pieces;
 
-namespace Chess
+namespace Chess.Basic
 {
     public class IllegalMove : Exception
     {

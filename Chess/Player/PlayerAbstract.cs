@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using Chess.Basic;
 
-namespace Chess
+namespace Chess.Player
 {
-    public abstract class Player
+    public abstract class PlayerAbstract
     {
         private string _name;
         private Color _color;
@@ -21,23 +22,23 @@ namespace Chess
 
         public abstract Tuple<Point2D, Point2D> GetMove();
 
-        protected Player(Player player)
+        protected PlayerAbstract(PlayerAbstract playerAbstract)
         {
-            _board = player._board;
-            _name = player._name;
-            _color = player._color;
+            _board = playerAbstract._board;
+            _name = playerAbstract._name;
+            _color = playerAbstract._color;
         }
 
-        protected Player(Player player, Board board)
+        protected PlayerAbstract(PlayerAbstract playerAbstract, Board board)
         {
             _board = board;
-            _name = player._name;
-            _color = player._color;
+            _name = playerAbstract._name;
+            _color = playerAbstract._color;
         }
 
-        public abstract Player Clone(Board board);
+        public abstract PlayerAbstract Clone(Board board);
 
-        protected Player(Board board, Color color, string name)
+        protected PlayerAbstract(Board board, Color color, string name)
         {
             _color = color;
             _board = board;

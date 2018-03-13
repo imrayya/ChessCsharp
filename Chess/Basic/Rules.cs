@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Linq;
+using Chess.Basic.Pieces;
 
-namespace Chess
+namespace Chess.Basic
 {
     public class Rules
     {
@@ -22,6 +22,17 @@ namespace Chess
             }
 
             if (canMove == false) return true;
+
+            //Can't Make a move
+            var moves = board.GetAllPossibleMoves();
+            int x = 0;
+            foreach (Tuple<Piece, Point2D> tuple in moves)
+            {
+                if (tuple.Item1.Color == board.CurrentInPlay) x++;
+            }
+
+            if (x == 0) return true;
+
 
             //Same move in the last 10 turns (between both)
             var history = board.MoveHistory.Last;
@@ -56,10 +67,10 @@ namespace Chess
                  square due to underpromotion do not affect the situation.)
              * 
              */
-            
-            
+
+
             //If the same position occurs for five consecutive moves by both players, the game is automatically a draw (i.e. a player does not have to claim it)
-            
+
             return false;
         }
 
