@@ -38,10 +38,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Basic\Pair.cs" />
+    <Compile Include="Player\AI\AlphaBeta.cs" />
     <Compile Include="Player\AI\Greedy1Ply.cs" />
     <Compile Include="Player\AI\Greedy1PlyMod.cs" />
     <Compile Include="Player\AI\Greedy2Ply.cs" />
     <Compile Include="Player\AI\GreedyNPly.cs" />
+    <Compile Include="Player\AI\Node.cs" />
     <Compile Include="Player\AI\PieceStrength.cs" />
     <Compile Include="Player\AI\RandomAI.cs" />
     <Compile Include="Player\AI\SimpleMonty.cs" />

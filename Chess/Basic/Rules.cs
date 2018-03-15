@@ -5,8 +5,15 @@ using Chess.Basic.Pieces;
 
 namespace Chess.Basic
 {
-    public class Rules
+    public static class Rules
     {
+        public static bool GameFinished(Board board)
+        {
+            if (CheckDraw(board)) return true;
+            if (CheckCheckMate(board)) return true;
+            return board.AllPieces1.Exists(piece => !piece.InPlay && piece is King);
+        }
+
         public static bool CheckDraw(Board board)
         {
             //Can't move
