@@ -13,11 +13,15 @@ namespace Chess.Player.AI
         public Greedy1Ply(Greedy1Ply player, Board board) : base(player, board)
         {
             _randomAi = new RandomAI(board, player.Color);
+            _boardEval = player._boardEval;
         }
 
-        public Greedy1Ply(Board board, Color color) : base(board, color, "Greedy 1ply AI")
+        private BoardEval _boardEval;
+        
+        public Greedy1Ply(Board board, Color color, BoardEval boardEval = BoardEval.Simple) : base(board, color, "Greedy 1ply AI")
         {
             _randomAi = new RandomAI(board, color);
+            _boardEval = boardEval;
         }
 
         public override Tuple<Point2D, Point2D> GetMove()
@@ -40,14 +44,14 @@ namespace Chess.Player.AI
 
                 tmpBoard.Move(newGameMove.Item1, newGameMove.Item2);
                 //take the negative as AI plays as black
-                var boardValue = PieceStrength.EvalBoard(tmpBoard, Color, PieceStrength.StandardEval);
+                var boardValue = BoardEvalMethod.GetEvalFunc(_boardEval).Invoke(tmpBoard, Color);
                 if (boardValue > bestValue)
                 {
                     bestValue = boardValue;
                     bestMove = new Tuple<Point2D, Point2D>(newGameMove.Item1.PositionPoint2D, newGameMove.Item2);
                 }
             }
-            if(bestValue == PieceStrength.EvalBoard(Board,Color,PieceStrength.StandardEval))
+            if(bestValue == PieceStrength.EvalBoardSimple(Board,Color))
             { _stopwatch.Stop();
                 return _randomAi.GetMove();
             }

@@ -12,7 +12,10 @@ namespace Chess.Player.AI
 
         public SimpleMonty(SimpleMonty player, Board board) : base(player, board)
         {
+            _boardEval = player._boardEval;
         }
+
+        private BoardEval _boardEval;
 
         public SimpleMonty(Board board, Color color, int numberOfSimsPerMove = 50) : base(board, color, "Simple Monty")
         {

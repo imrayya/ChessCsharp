@@ -38,6 +38,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+      <Compile Include="Player\AI\AiFactory.cs"/>
     <Compile Include="Player\AI\Greedy1Ply.cs" />
     <Compile Include="Player\AI\Greedy1PlyMod.cs" />
     <Compile Include="Player\AI\Greedy2Ply.cs" />
@@ -60,9 +61,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Basic\Rules.cs" />
     <Compile Include="Utils\Util.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Pieces\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

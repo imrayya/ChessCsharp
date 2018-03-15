@@ -13,7 +13,8 @@ namespace Chess
 {
     public static class GameLoop
     {
-        public static Tuple<Color, int, long, long>[] Games(Board board, PlayerAbstract white, PlayerAbstract black, int numberOfGames,
+        public static Tuple<Color, int, long, long>[] Games(Board board, PlayerAbstract white, PlayerAbstract black,
+            int numberOfGames,
             bool debugPrint = false, bool boardPrint = false)
         {
             List<Task<Tuple<Color, int, long, long>>> tasks = new List<Task<Tuple<Color, int, long, long>>>();
@@ -37,7 +38,6 @@ namespace Chess
         }
 
 
-
         public static Tuple<Color, int, long, long> Game(Board board, PlayerAbstract white, PlayerAbstract black,
             ChessListener listener)
         {
@@ -54,6 +54,7 @@ namespace Chess
                     return new Tuple<Color, int, long, long>(Color.NoColor, i, white.Stopwatch.ElapsedMilliseconds,
                         black.Stopwatch.ElapsedMilliseconds);
                 }
+
                 board.Move(black.GetMove());
                 listener.MoveEvent(board.Clone());
                 if (board.AllPieces1.FindAll(p => p is King && p.InPlay).Count != 2) break; //if checkmate 
