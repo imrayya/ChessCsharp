@@ -16,14 +16,19 @@ namespace Chess.Player.AI
         public GreedyNPly(GreedyNPly player, Board board) : base(player, board)
         {
             _randomAi = new RandomAI(board, player.Color);
+            _boardEval = player._boardEval;
             _n = player._n;
         }
 
-        public GreedyNPly(Board board, Color color, int n = 3) : base(board, color, "Greedy " + n +" ply AI")
+        private BoardEval _boardEval;
+
+        public GreedyNPly(Board board, Color color, BoardEval boardEval = BoardEval.Simple, int n = 3) : base(board,
+            color, "Greedy " + n + " ply AI")
         {
             if (n < 0) throw new ArgumentException("n has to be larger than 3");
             _n = n;
             _randomAi = new RandomAI(board, color);
+            _boardEval = boardEval;
         }
 
         public override Tuple<Point2D, Point2D> GetMove()
@@ -49,12 +54,12 @@ namespace Chess.Player.AI
                 for (int j = 1; j <= _n; j++)
                 {
                     currentColor = Util.ConverToOpposite(currentColor);
-                    tmpBoard.Move(new Greedy1Ply(tmpBoard,currentColor)
+                    tmpBoard.Move(new Greedy1Ply(tmpBoard, currentColor)
                         .GetMove());
                 }
 
                 //take the negative as AI plays as black
-                var boardValue = PieceStrength.EvalBoard(tmpBoard, Color, PieceStrength.StandardEval);
+                var boardValue = BoardEvalMethod.GetEvalFunc(_boardEval).Invoke(tmpBoard, Color);
                 if (boardValue > bestValue)
                 {
                     bestValue = boardValue;

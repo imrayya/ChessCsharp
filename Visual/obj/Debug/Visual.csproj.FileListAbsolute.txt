@@ -10,3 +10,15 @@ C:\Users\Imray\source\repos\ChessCsharp\Visual\obj\Debug\Visual.csproj.GenerateR
 C:\Users\Imray\source\repos\ChessCsharp\Visual\obj\Debug\Visual.csproj.CoreCompileInputs.cache
 C:\Users\Imray\source\repos\ChessCsharp\Visual\obj\Debug\Visual.exe
 C:\Users\Imray\source\repos\ChessCsharp\Visual\obj\Debug\Visual.pdb
+C:\Users\Imray\RiderProjects\ChessCsharp\Visual\bin\Debug\Visual.exe.config
+C:\Users\Imray\RiderProjects\ChessCsharp\Visual\bin\Debug\Visual.exe
+C:\Users\Imray\RiderProjects\ChessCsharp\Visual\bin\Debug\Visual.pdb
+C:\Users\Imray\RiderProjects\ChessCsharp\Visual\bin\Debug\Chess.exe
+C:\Users\Imray\RiderProjects\ChessCsharp\Visual\bin\Debug\Chess.pdb
+C:\Users\Imray\RiderProjects\ChessCsharp\Visual\obj\Debug\Visual.csprojResolveAssemblyReference.cache
+C:\Users\Imray\RiderProjects\ChessCsharp\Visual\obj\Debug\Visual.Form1.resources
+C:\Users\Imray\RiderProjects\ChessCsharp\Visual\obj\Debug\Visual.Properties.Resources.resources
+C:\Users\Imray\RiderProjects\ChessCsharp\Visual\obj\Debug\Visual.csproj.GenerateResource.Cache
+C:\Users\Imray\RiderProjects\ChessCsharp\Visual\obj\Debug\Visual.csproj.CoreCompileInputs.cache
+C:\Users\Imray\RiderProjects\ChessCsharp\Visual\obj\Debug\Visual.exe
+C:\Users\Imray\RiderProjects\ChessCsharp\Visual\obj\Debug\Visual.pdb
