@@ -4,19 +4,44 @@
     {
         private PieceEnum _flags;
         private Point2D _positionPoint2D;
-        private readonly string _letter;
-        private readonly string _name;
-        private Point2D[] _moveSet;
+
+        protected Piece(Piece piece)
+        {
+            _flags = piece._flags;
+            _positionPoint2D = piece._positionPoint2D;
+            Letter = piece.Letter;
+            Name = piece.Name;
+            MoveSet = piece.MoveSet;
+            Color = piece.Color;
+        }
+
+        protected Piece(Point2D positionPoint2D, Color color, string letter, string name, bool moveRepeat)
+        {
+            Name = name;
+            _flags = moveRepeat
+                ? PieceEnum.InPlay |
+                  PieceEnum.MoveRepeat
+                : PieceEnum.InPlay;
+            Letter = letter;
+            _positionPoint2D = positionPoint2D;
+            Color = color;
+            if (positionPoint2D.X % 2 == positionPoint2D.Y % 2)
+                FlagsHelper.Set(ref _flags, PieceEnum.LightColor);
+            else
+                FlagsHelper.Unset(ref _flags, PieceEnum.LightColor);
+        }
 
         public bool LightColor => FlagsHelper.IsInSet(_flags, PieceEnum.LightColor);
         public bool InPlay => FlagsHelper.IsInSet(_flags, PieceEnum.InPlay);
         public bool FirstMove => FlagsHelper.IsInSet(_flags, PieceEnum.FirstMove);
         public bool MoveRepeat => FlagsHelper.IsInSet(_flags, PieceEnum.MoveRepeat);
         public int Rank => PositionPoint2D.Y - (Color == Color.Black ? 8 : 0);
-        public Point2D[] MoveSet => _moveSet;
-        public string Letter => _letter;
-        public string Name => _name;
-        protected void SetMoveSet(Point2D[] moveSet) => _moveSet = moveSet;
+        public Point2D[] MoveSet { get; private set; }
+
+        public string Letter { get; }
+
+        public string Name { get; }
+
         public Color Color { get; }
 
         public Point2D PositionPoint2D
@@ -27,44 +52,15 @@
                 _positionPoint2D = value;
                 FlagsHelper.Set(ref _flags, PieceEnum.FirstMove);
                 if (value.X % 2 == value.Y % 2)
-                {
                     FlagsHelper.Set(ref _flags, PieceEnum.LightColor);
-                }
                 else
-                {
                     FlagsHelper.Unset(ref _flags, PieceEnum.LightColor);
-                }
             }
         }
 
-        protected Piece(Piece piece)
+        protected void SetMoveSet(Point2D[] moveSet)
         {
-            _flags = piece._flags;
-            _positionPoint2D = piece._positionPoint2D;
-            _letter = piece.Letter;
-            _name = piece.Name;
-            _moveSet = piece._moveSet;
-            Color = piece.Color;
-        }
-
-        protected Piece(Point2D positionPoint2D, Color color, string letter, string name, bool moveRepeat)
-        {
-            _name = name;
-            _flags = moveRepeat
-                ? PieceEnum.InPlay |
-                  PieceEnum.MoveRepeat
-                : PieceEnum.InPlay;
-            _letter = letter;
-            _positionPoint2D = positionPoint2D;
-            Color = color;
-            if (positionPoint2D.X % 2 == positionPoint2D.Y % 2)
-            {
-                FlagsHelper.Set(ref _flags, PieceEnum.LightColor);
-            }
-            else
-            {
-                FlagsHelper.Unset(ref _flags, PieceEnum.LightColor);
-            }
+            MoveSet = moveSet;
         }
 
         public Piece OutOfPlay()
@@ -89,7 +85,7 @@
 
         public Knight(Point2D positionPoint2D, Color color) : base(positionPoint2D, color, "n", "Knight", false)
         {
-            var tmp = new Point2D[]
+            var tmp = new[]
             {
                 new Point2D(1, 2), new Point2D(1, -2), new Point2D(-1, 2), new Point2D(-1, -2),
                 new Point2D(2, 1), new Point2D(-2, 1), new Point2D(2, -1), new Point2D(-2, -1)
@@ -105,33 +101,29 @@
 
     public class Pawn : Piece
     {
-        private Point2D[] _firstMoveSet;
-
-        public Point2D[] FirstMoveSet => _firstMoveSet;
-
-        private Point2D[] _attackSet;
-
-        public Point2D[] AttackSet => _attackSet;
-
         public Pawn(Pawn pawn) : base(pawn)
         {
-            _firstMoveSet = pawn._firstMoveSet;
-            _attackSet = pawn._attackSet;
+            FirstMoveSet = pawn.FirstMoveSet;
+            AttackSet = pawn.AttackSet;
         }
 
         public Pawn(Point2D positionPoint2D, Color color) : base(positionPoint2D, color, "p", "Pawn", false)
         {
             var tmp = color == Color.Black
-                ? new Point2D[] {new Point2D(0, 1)}
-                : new Point2D[] {new Point2D(0, -1)};
+                ? new[] {new Point2D(0, 1)}
+                : new[] {new Point2D(0, -1)};
             SetMoveSet(tmp);
-            _attackSet = color == Color.Black
-                ? new Point2D[] {new Point2D(1, 1), new Point2D(-1, 1)}
-                : new Point2D[] {new Point2D(1, -1), new Point2D(-1, -1)};
-            _firstMoveSet = color == Color.Black
-                ? new Point2D[] {new Point2D(0, 2)}
-                : new Point2D[] {new Point2D(0, -2)};
+            AttackSet = color == Color.Black
+                ? new[] {new Point2D(1, 1), new Point2D(-1, 1)}
+                : new[] {new Point2D(1, -1), new Point2D(-1, -1)};
+            FirstMoveSet = color == Color.Black
+                ? new[] {new Point2D(0, 2)}
+                : new[] {new Point2D(0, -2)};
         }
+
+        public Point2D[] FirstMoveSet { get; }
+
+        public Point2D[] AttackSet { get; }
 
         public override Piece Clone()
         {
@@ -147,7 +139,7 @@
 
         public Rook(Point2D positionPoint2D, Color color) : base(positionPoint2D, color, "r", "Rook", true)
         {
-            var tmp = new Point2D[] {new Point2D(1, 0), new Point2D(-1, 0), new Point2D(0, 1), new Point2D(0, -1)};
+            var tmp = new[] {new Point2D(1, 0), new Point2D(-1, 0), new Point2D(0, 1), new Point2D(0, -1)};
             SetMoveSet(tmp);
         }
 
@@ -165,7 +157,7 @@
 
         public Bishop(Point2D positionPoint2D, Color color) : base(positionPoint2D, color, "b", "Bishop", true)
         {
-            var tmp = new Point2D[] {new Point2D(1, 1), new Point2D(-1, 1), new Point2D(1, -1), new Point2D(-1, -1)};
+            var tmp = new[] {new Point2D(1, 1), new Point2D(-1, 1), new Point2D(1, -1), new Point2D(-1, -1)};
             SetMoveSet(tmp);
         }
 
@@ -183,7 +175,7 @@
 
         public King(Point2D positionPoint2D, Color color) : base(positionPoint2D, color, "k", "King", false)
         {
-            var tmp = new Point2D[]
+            var tmp = new[]
             {
                 new Point2D(1, 0), new Point2D(-1, 0), new Point2D(0, 1), new Point2D(0, -1), new Point2D(1, 1),
                 new Point2D(-1, 1), new Point2D(1, -1), new Point2D(-1, -1)
@@ -205,7 +197,7 @@
 
         public Queen(Point2D positionPoint2D, Color color) : base(positionPoint2D, color, "q", "Queen", true)
         {
-            var tmp = new Point2D[]
+            var tmp = new[]
             {
                 new Point2D(1, 0), new Point2D(-1, 0), new Point2D(0, 1), new Point2D(0, -1), new Point2D(1, 1),
                 new Point2D(-1, 1), new Point2D(1, -1), new Point2D(-1, -1)

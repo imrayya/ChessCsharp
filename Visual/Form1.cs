@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
 using System.Windows.Forms;
 using Chess;
 using Chess.Basic;
@@ -21,12 +15,16 @@ namespace Visual
 {
     public partial class Form1 : Form, ChessListener
     {
-        Pen _pen = new Pen(Color.Black);
-        Brush _brush = new SolidBrush(Color.Black);
+        private Brush _brush = new SolidBrush(Color.Black);
+        private int _current;
+        private readonly string _path = "C:\\Users\\Imray\\source\\repos\\ChessCsharp\\Visual\\resources\\";
+        private readonly Pen _pen = new Pen(Color.Black);
+
+        private bool _play = true;
+
+        private readonly Timer _timer1;
 
         public List<Board> Board;
-        private int _current = 0;
-        string _path = "C:\\Users\\Imray\\source\\repos\\ChessCsharp\\Visual\\resources\\";
 
         public Form1(Board board)
         {
@@ -36,17 +34,33 @@ namespace Visual
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
 
-        private System.Windows.Forms.Timer _timer1;
-
         public Form1()
         {
             InitializeComponent();
-            _timer1 = new System.Windows.Forms.Timer();
+            _timer1 = new Timer();
             _timer1.Interval = 500; //0.5 seconds
-            _timer1.Tick += new System.EventHandler(timer1_Tick);
+            _timer1.Tick += timer1_Tick;
             _timer1.Start();
             trackBar2.SetRange(100, 1000);
             trackBar2.Value = 500;
+        }
+
+        public void MoveEvent(Board board)
+        {
+            if (Board == null)
+                Board = new List<Board>();
+            Board.Add(board);
+            trackBar1.SetRange(0, Board.Count - 1);
+        }
+
+
+        public void Draw()
+        {
+        }
+
+        public void Winner(Chess.Basic.Color color)
+        {
+            throw new NotImplementedException();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -61,36 +75,27 @@ namespace Visual
 
         private void PaintCustom()
         {
-            int width = Canvas.Width / 8;
-            int height = Canvas.Height / 8;
-            Graphics g1 = Canvas.CreateGraphics();
+            var width = Canvas.Width / 8;
+            var height = Canvas.Height / 8;
+            var g1 = Canvas.CreateGraphics();
             Image tmp = new Bitmap(Canvas.Width, Canvas.Height);
-            Graphics g = Graphics.FromImage(tmp);
+            var g = Graphics.FromImage(tmp);
             g.FillRectangle(new SolidBrush(Canvas.BackColor), 0, 0, Canvas.Width, Canvas.Height);
-            for (int x = 0; x < 8; x++)
-            {
-                for (int y = 0; y < 8; y++)
-                {
-                    g.DrawRectangle(_pen, x * width, y * height, width, height);
-                }
-            }
+            for (var x = 0; x < 8; x++)
+            for (var y = 0; y < 8; y++)
+                g.DrawRectangle(_pen, x * width, y * height, width, height);
 
-            if (Board != null && _current >= Board.Count)
-            {
-                _current = Board.Count - 1;
-            }
+            if (Board != null && _current >= Board.Count) _current = Board.Count - 1;
 
 
             if (Board != null && Board.Count != 0)
-            {
                 foreach (var p in Board[_current].AllPieces1)
                 {
                     if (!p.InPlay) continue;
-                    Image image = Image.FromFile(ImagePath(p));
+                    var image = Image.FromFile(ImagePath(p));
                     image = ResizeImage(image, width, height);
                     g.DrawImage(image, new Point(p.PositionPoint2D.X * width, p.PositionPoint2D.Y * height));
                 }
-            }
 
 
             if (_play)
@@ -111,13 +116,13 @@ namespace Visual
         {
         }
 
-        private String ImagePath(Piece piece)
+        private string ImagePath(Piece piece)
         {
             return _path + piece.Color.ToString().ToLower() + piece.Name + ".png";
         }
 
         /// <summary>
-        /// Resize the image to the specified width and height.
+        ///     Resize the image to the specified width and height.
         /// </summary>
         /// <param name="image">The image to resize.</param>
         /// <param name="width">The width to resize to.</param>
@@ -162,10 +167,10 @@ namespace Visual
             trackBar1.SetRange(0, 1);
             _current = 0;
             Board.Add(tmp);
-                        PlayerAbstract whitePlayer =
-                            new AlphaBetaSimple(tmp, Chess.Basic.Color.White, depth: 2, boardEval: BoardEval.SimpleTable);
-                        PlayerAbstract blackPlayer =
-                            new AlphaBetaSimple(tmp, Chess.Basic.Color.Black, depth: 2, boardEval: BoardEval.Table);
+            PlayerAbstract whitePlayer =
+                new AlphaBetaSimple(tmp, Chess.Basic.Color.White, 2, BoardEval.SimpleTable);
+            PlayerAbstract blackPlayer =
+                new AlphaBetaSimple(tmp, Chess.Basic.Color.Black, 2, BoardEval.Table);
 //            PlayerAbstract whitePlayer = new RandomAI(tmp, Chess.Basic.Color.White);
 //            PlayerAbstract blackPlayer = new Greedy1Ply(tmp, Chess.Basic.Color.Black);
 
@@ -175,31 +180,11 @@ namespace Visual
             MessageBox.Show(result.Item1 == Chess.Basic.Color.NoColor ? "Draw" : "Winner is " + result.Item1);
         }
 
-        public void MoveEvent(Board board)
-        {
-            if (Board == null)
-                Board = new List<Board>();
-            Board.Add(board);
-            trackBar1.SetRange(0, Board.Count - 1);
-        }
-
-
-        public void Draw()
-        {
-        }
-
-        public void Winner(Chess.Basic.Color color)
-        {
-            throw new NotImplementedException();
-        }
-
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
             _current = trackBar1.Value;
             PaintCustom();
         }
-
-        private bool _play = true;
 
         private void button2_Click(object sender, EventArgs e)
         {

@@ -1,16 +1,14 @@
-﻿using Chess.Basic;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Chess.Basic;
 using Chess.Basic.Pieces;
 
 namespace Chess.Player.AI
 {
-    class Node
+    internal class Node
     {
-        private BoardEval BoardEval;
+        private readonly BoardEval BoardEval;
+        public List<Node> childerNodes;
 
         public Node(int depth, Board board, BoardEval boardEval = BoardEval.Simple)
         {
@@ -38,12 +36,11 @@ namespace Chess.Player.AI
         public Board Board { get; set; }
         public float Score { get; set; }
         public Color Color => Board.CurrentInPlay;
-        public List<Node> childerNodes;
 
         public Node[] GenerateChildNodes()
         {
-            List<Node> list = new List<Node>();
-            foreach (Tuple<Piece, Point2D> allPossibleMove in Organize(Board.GetAllPossibleMoves(Color),
+            var list = new List<Node>();
+            foreach (var allPossibleMove in Organize(Board.GetAllPossibleMoves(Color),
                 BoardEvalMethod.GetEvalFunc(BoardEval)))
             {
                 var newBoard = Board.Clone();
@@ -64,10 +61,10 @@ namespace Chess.Player.AI
             {
                 var temp = Board.Clone();
                 temp.Move(tuple);
-                int a = func.Invoke(temp, Color);
+                var a = func.Invoke(temp, Color);
                 temp = Board.Clone();
                 temp.Move(tuple1);
-                int b = func.Invoke(temp, Color);
+                var b = func.Invoke(temp, Color);
                 return a.CompareTo(b);
             });
             return moves;

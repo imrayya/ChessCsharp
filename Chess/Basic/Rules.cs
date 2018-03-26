@@ -17,16 +17,14 @@ namespace Chess.Basic
         public static bool CheckDraw(Board board)
         {
             //Can't move
-            List<Piece> list = board.GetAllColored(board.CurrentInPlay);
-            bool canMove = false;
+            var list = board.GetAllColored(board.CurrentInPlay);
+            var canMove = false;
             foreach (var piece in list)
-            {
                 if (board.GetAllPossibleMovesPerPiece(piece).Length != 0)
                 {
                     canMove = true;
                     break;
                 }
-            }
 
             if (canMove == false) return true;
 
@@ -34,14 +32,11 @@ namespace Chess.Basic
             var history = board.MoveHistory.Last;
             var set = new List<Tuple<Point2D, Point2D>>();
             if (history == null) return false;
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                Tuple<Point2D, Point2D> currentMove =
+                var currentMove =
                     new Tuple<Point2D, Point2D>(history.Value.Item1, history.Value.Item2);
-                if (set.Any(a => !Equals(a, currentMove)))
-                {
-                    set.Add(currentMove);
-                }
+                if (set.Any(a => !Equals(a, currentMove))) set.Add(currentMove);
 
                 history = history.Previous;
                 if (history == null) break;
@@ -52,13 +47,13 @@ namespace Chess.Basic
 
             //if no pawn has moved in the last 75 moves or !no capture!
 
-            if (history != null &&history.List.Count > 75)
+            if (history != null && history.List.Count > 75)
             {
                 var pieceHistory = Board.PieceFromHistory(history).Last;
 
-                bool capture = false;
-                bool pawn = false;
-                for (int i = 0; i < 75; i++)
+                var capture = false;
+                var pawn = false;
+                for (var i = 0; i < 75; i++)
                 {
                     if (history.Value.Item3)
                     {
@@ -115,10 +110,8 @@ namespace Chess.Basic
             var allMoves = board.GetAllPossibleMoves();
             var kings = board.AllPieces1.FindAll(p => p is King);
             foreach (var king in kings)
-            {
                 if (allMoves.Any(p => p.Item2 == king.PositionPoint2D))
                     return new Tuple<bool, Color>(true, king.Color);
-            }
 
             return new Tuple<bool, Color>(false, Color.NoColor);
         }
@@ -128,10 +121,7 @@ namespace Chess.Basic
         {
             var check = CheckCheck(board);
             //king in trouble
-            if (!check.Item1)
-            {
-                return false;
-            }
+            if (!check.Item1) return false;
 
             var king = board.AllPieces1.Find(p => p is King && p.Color == check.Item2);
             //king can move
@@ -142,12 +132,8 @@ namespace Chess.Basic
                 allMoves.FindAll(move => move.Item1 == king)
                     .ConvertAll(tuple => tuple.Item2); //All moves that the king can make
             foreach (var kingmove in kingMove)
-            {
                 if (allMovesOp.ConvertAll(tuple => tuple.Item2).Any(move => move != kingmove))
-                {
                     return false;
-                }
-            }
 
             //block move
             var allMovesFriendly = allMoves.FindAll(tuple => tuple.Item1.Color == king.Color);

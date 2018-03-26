@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using Chess.Basic;
-using Chess.Basic.Pieces;
 using Chess.Utils;
 
 namespace Chess.Player.AI
 {
     public class Greedy2Ply : PlayerAbstract
     {
-        private RandomAI _randomAi;
+        private readonly BoardEval _boardEval;
+        private readonly RandomAI _randomAi;
 
         public Greedy2Ply(Greedy2Ply player, Board board) : base(player, board)
         {
             _randomAi = new RandomAI(board, player.Color);
             _boardEval = player._boardEval;
         }
-
-        private BoardEval _boardEval;
 
         public Greedy2Ply(Board board, Color color, BoardEval boardEval = BoardEval.Simple) : base(board, color,
             "Greedy 2ply AI")
@@ -29,12 +26,12 @@ namespace Chess.Player.AI
         {
             Stopwatch.Start();
 
-            List<Piece> pieces = Board.GetAllColored(Color);
-            List<Tuple<Piece, Point2D>> possibleMoves = Board.GetAllPossibleMoves();
+            var pieces = Board.GetAllColored(Color);
+            var possibleMoves = Board.GetAllPossibleMoves();
             possibleMoves = possibleMoves.FindAll(tuple => tuple.Item1.Color == Color);
 
             //var newGameMoves = game.ugly_moves();
-            Tuple<Point2D, Point2D> bestMove = _randomAi.GetMove();
+            var bestMove = _randomAi.GetMove();
             //use any negative large number
             var bestValue = BoardEvalMethod.GetEvalFunc(_boardEval).Invoke(Board, Color);
 

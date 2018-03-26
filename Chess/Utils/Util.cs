@@ -25,7 +25,7 @@ namespace Chess.Utils
             return color == Color.Black ? Color.White : Color.Black;
         }
 
-    public static char? ConvertNumberToLetter(int b)
+        public static char? ConvertNumberToLetter(int b)
         {
             switch (b)
             {

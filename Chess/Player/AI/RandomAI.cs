@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using Chess.Basic;
-using Chess.Basic.Pieces;
 
 namespace Chess.Player.AI
 {
     public class RandomAI : PlayerAbstract
     {
-        private Random _random;
+        private readonly Random _random;
 
         public RandomAI(Board board, Color color) : base(board, color, "Random AI")
         {
@@ -37,10 +35,10 @@ namespace Chess.Player.AI
         public override Tuple<Point2D, Point2D> GetMove()
         {
             Stopwatch.Start();
-            List<Piece> pieces = Board.GetAllColored(Color);
-            List<Tuple<Piece, Point2D>> possibleMoves = Board.GetAllPossibleMoves();
+            var pieces = Board.GetAllColored(Color);
+            var possibleMoves = Board.GetAllPossibleMoves();
             possibleMoves = possibleMoves.FindAll(tuple => tuple.Item1.Color == Color);
-            int r = _random.Next(possibleMoves.Count);
+            var r = _random.Next(possibleMoves.Count);
             var tmp = possibleMoves[r];
             Stopwatch.Stop();
             return new Tuple<Point2D, Point2D>(tmp.Item1.PositionPoint2D, tmp.Item2);

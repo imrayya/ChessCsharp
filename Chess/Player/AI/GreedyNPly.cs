@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using Chess.Basic;
-using Chess.Basic.Pieces;
 using Chess.Utils;
 
 namespace Chess.Player.AI
 {
     public class GreedyNPly : PlayerAbstract
     {
-        private RandomAI _randomAi;
+        private readonly BoardEval _boardEval;
 
-        private int _n;
+        private readonly int _n;
+        private readonly RandomAI _randomAi;
 
 
         public GreedyNPly(GreedyNPly player, Board board) : base(player, board)
@@ -19,8 +18,6 @@ namespace Chess.Player.AI
             _boardEval = player._boardEval;
             _n = player._n;
         }
-
-        private BoardEval _boardEval;
 
         public GreedyNPly(Board board, Color color, BoardEval boardEval = BoardEval.Simple, int n = 3) : base(board,
             color, "Greedy " + n + " ply AI")
@@ -35,12 +32,12 @@ namespace Chess.Player.AI
         {
             Stopwatch.Start();
 
-            List<Piece> pieces = Board.GetAllColored(Color);
-            List<Tuple<Piece, Point2D>> possibleMoves = Board.GetAllPossibleMoves();
+            var pieces = Board.GetAllColored(Color);
+            var possibleMoves = Board.GetAllPossibleMoves();
             possibleMoves = possibleMoves.FindAll(tuple => tuple.Item1.Color == Color);
 
             //var newGameMoves = game.ugly_moves();
-            Tuple<Point2D, Point2D> bestMove = _randomAi.GetMove();
+            var bestMove = _randomAi.GetMove();
             //use any negative large number
             var bestValue = BoardEvalMethod.GetEvalFunc(_boardEval).Invoke(Board, Color);
             for (var i = 0; i < possibleMoves.Count; i++)
@@ -50,7 +47,7 @@ namespace Chess.Player.AI
 
                 tmpBoard.Move(newGameMove.Item1, newGameMove.Item2);
                 var currentColor = Color;
-                for (int j = 1; j <= _n; j++)
+                for (var j = 1; j <= _n; j++)
                 {
                     currentColor = Util.ConverToOpposite(currentColor);
                     tmpBoard.Move(new Greedy1Ply(tmpBoard, currentColor)

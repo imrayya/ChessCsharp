@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GUI
@@ -19,9 +13,8 @@ namespace GUI
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Graphics g = this.CreateGraphics();
-            g.FillRectangle(new SolidBrush(Color.Blue),20,20,200,200 );
-
+            var g = CreateGraphics();
+            g.FillRectangle(new SolidBrush(Color.Blue), 20, 20, 200, 200);
         }
     }
 }

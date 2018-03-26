@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using Chess.Basic;
-using Chess.Basic.Pieces;
-using Chess.Player;
 
 namespace Chess.Player.AI
 {
     public class Greedy1Ply : PlayerAbstract
     {
-        private RandomAI _randomAi;
+        private readonly BoardEval _boardEval;
+        private readonly RandomAI _randomAi;
 
         public Greedy1Ply(Greedy1Ply player, Board board) : base(player, board)
         {
@@ -16,9 +14,8 @@ namespace Chess.Player.AI
             _boardEval = player._boardEval;
         }
 
-        private BoardEval _boardEval;
-        
-        public Greedy1Ply(Board board, Color color, BoardEval boardEval = BoardEval.Simple) : base(board, color, "Greedy 1ply AI")
+        public Greedy1Ply(Board board, Color color, BoardEval boardEval = BoardEval.Simple) : base(board, color,
+            "Greedy 1ply AI")
         {
             _randomAi = new RandomAI(board, color);
             _boardEval = boardEval;
@@ -28,14 +25,14 @@ namespace Chess.Player.AI
         {
             Stopwatch.Start();
 
-            List<Piece> pieces = Board.GetAllColored(Color);
-            List<Tuple<Piece, Point2D>> possibleMoves = Board.GetAllPossibleMoves();
+            var pieces = Board.GetAllColored(Color);
+            var possibleMoves = Board.GetAllPossibleMoves();
             possibleMoves = possibleMoves.FindAll(tuple => tuple.Item1.Color == Color);
 
             //var newGameMoves = game.ugly_moves();
-            Tuple<Point2D, Point2D> bestMove = _randomAi.GetMove();
+            var bestMove = _randomAi.GetMove();
             //use any negative large number
-            var bestValue = BoardEvalMethod.GetEvalFunc(_boardEval).Invoke(Board,Color);
+            var bestValue = BoardEvalMethod.GetEvalFunc(_boardEval).Invoke(Board, Color);
 
             for (var i = 0; i < possibleMoves.Count; i++)
             {
@@ -51,8 +48,10 @@ namespace Chess.Player.AI
                     bestMove = new Tuple<Point2D, Point2D>(newGameMove.Item1.PositionPoint2D, newGameMove.Item2);
                 }
             }
-            if(bestValue == PieceStrength.EvalBoardSimple(Board,Color))
-            { _stopwatch.Stop();
+
+            if (bestValue == PieceStrength.EvalBoardSimple(Board, Color))
+            {
+                _stopwatch.Stop();
                 return _randomAi.GetMove();
             }
 

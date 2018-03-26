@@ -22,3 +22,4 @@ C:\Users\Imray\RiderProjects\ChessCsharp\Visual\obj\Debug\Visual.csproj.Generate
 C:\Users\Imray\RiderProjects\ChessCsharp\Visual\obj\Debug\Visual.csproj.CoreCompileInputs.cache
 C:\Users\Imray\RiderProjects\ChessCsharp\Visual\obj\Debug\Visual.exe
 C:\Users\Imray\RiderProjects\ChessCsharp\Visual\obj\Debug\Visual.pdb
+C:\Users\imray\source\repos\ChessCsharp\Visual\obj\Debug\Visual.csproj.CopyComplete

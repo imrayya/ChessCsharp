@@ -21,7 +21,10 @@ namespace Chess.Basic
             Y = y;
         }
 
-        public override string ToString() => "Point2D{" + X + "," + Y + "}";
+        public override string ToString()
+        {
+            return "Point2D{" + X + "," + Y + "}";
+        }
 
 
         public Point2D(string coor)
@@ -30,9 +33,12 @@ namespace Chess.Basic
             Y = int.Parse(coor[1].ToString()) - 1;
         }
 
-        public string ToCoor() =>
-            (Util.ConvertNumberToLetter(X) ?? throw new ArgumentException("Number cannot convert to letter")) + "" +
-            (Y + 1);
+        public string ToCoor()
+        {
+            return (Util.ConvertNumberToLetter(X) ?? throw new ArgumentException("Number cannot convert to letter")) +
+                   "" +
+                   (Y + 1);
+        }
 
         public static Point2D operator +(Point2D a, Point2D b)
         {

@@ -9,37 +9,25 @@ namespace Chess.Basic
 {
     public class Board
     {
-        private Piece[,] _board = new Piece[8, 8];
-        private List<Piece> AllPieces = new List<Piece>();
-        private int _moveNumber = 0;
-        private Color _currentInPlay = Color.White;
-
         private readonly Dictionary<Point2D, Point2D[]> _cachePossibleMove
             = new Dictionary<Point2D, Point2D[]>();
 
-        public Color CurrentInPlay => _currentInPlay;
-        public int MoveNumber => _moveNumber;
-        public List<Piece> AllPieces1 => AllPieces;
-
-        public bool PrintDebug = false;
+        private readonly Piece[,] _board = new Piece[8, 8];
 
         //start, finish ,pieces taken?
         public LinkedList<Tuple<Point2D, Point2D, bool>> MoveHistory = new LinkedList<Tuple<Point2D, Point2D, bool>>();
 
-        public List<Piece> GetAllColored(Color color)
-        {
-            return AllPieces.FindAll(p => p.Color == color && p.InPlay);
-        }
+        public bool PrintDebug = false;
 
         public Board()
         {
-            for (int x = 0; x < 8; x++)
+            for (var x = 0; x < 8; x++)
             {
                 _board[x, 1] = new Pawn(new Point2D(x, 1), Color.Black);
                 _board[x, 6] = new Pawn(new Point2D(x, 6), Color.White);
             }
 
-            for (int i = 0; i < 2; i++)
+            for (var i = 0; i < 2; i++)
             {
                 //Rooks
                 _board[0, i == 1 ? 0 : 7] =
@@ -64,43 +52,40 @@ namespace Chess.Basic
             _board[4, 0] = new Queen(new Point2D(4, 0), Color.Black);
 
             foreach (var piece in _board)
-            {
                 if (piece != null)
-                {
-                    AllPieces.Add(piece);
-                }
-            }
+                    AllPieces1.Add(piece);
         }
 
         public Board(Board board)
         {
             _board = new Piece[8, 8];
-            for (int i = 0; i < board._board.GetLength(0); i++)
-            {
-                for (int j = 0; j < board._board.GetLength(1); j++)
-                {
-                    if (board._board[i, j] != null)
-                        _board[i, j] = board._board[i, j].Clone();
-                }
-            }
+            for (var i = 0; i < board._board.GetLength(0); i++)
+            for (var j = 0; j < board._board.GetLength(1); j++)
+                if (board._board[i, j] != null)
+                    _board[i, j] = board._board[i, j].Clone();
 
             MoveHistory = new LinkedList<Tuple<Point2D, Point2D, bool>>();
             foreach (var tuple in board.MoveHistory)
-            {
                 MoveHistory.AddLast(
                     new Tuple<Point2D, Point2D, bool>(tuple.Item1.Clone(), tuple.Item2.Clone(), tuple.Item3));
-            }
 
-            AllPieces = new List<Piece>();
+            AllPieces1 = new List<Piece>();
             foreach (var piece in _board)
-            {
                 if (piece != null)
-                {
-                    AllPieces.Add(piece);
-                }
-            }
+                    AllPieces1.Add(piece);
 
-            _currentInPlay = board._currentInPlay;
+            CurrentInPlay = board.CurrentInPlay;
+        }
+
+        public Color CurrentInPlay { get; private set; } = Color.White;
+
+        public int MoveNumber { get; private set; }
+
+        public List<Piece> AllPieces1 { get; } = new List<Piece>();
+
+        public List<Piece> GetAllColored(Color color)
+        {
+            return AllPieces1.FindAll(p => p.Color == color && p.InPlay);
         }
 
         public Board Clone()
@@ -108,7 +93,10 @@ namespace Chess.Basic
             return new Board(this);
         }
 
-        private Piece GetAt(Point2D position) => _board[position.X, position.Y];
+        private Piece GetAt(Point2D position)
+        {
+            return _board[position.X, position.Y];
+        }
 
         private bool OutOfBounds(Point2D position)
         {
@@ -121,7 +109,7 @@ namespace Chess.Basic
         }
 
         /// <summary>
-        /// Moves a piece on the board
+        ///     Moves a piece on the board
         /// </summary>
         /// <param name="start">The coor of the piece you want to move</param>
         /// <param name="finish">The coor of where you want the piece to move to</param>
@@ -135,10 +123,7 @@ namespace Chess.Basic
                 var atStart = GetAt(start);
                 if (atStart == null)
                     throw new IllegalMove(start, finish, "Not a Piece");
-                if (atStart.Color != _currentInPlay)
-                {
-                    throw new IllegalMove(start, finish, "Wrong color", _currentInPlay);
-                }
+                if (atStart.Color != CurrentInPlay) throw new IllegalMove(start, finish, "Wrong color", CurrentInPlay);
 
                 var atEnd = GetAt(finish);
                 atEnd?.OutOfPlay();
@@ -151,8 +136,8 @@ namespace Chess.Basic
                     _board[atStart.PositionPoint2D.X, atStart.PositionPoint2D.Y] =
                         newPawn;
                     atStart.OutOfPlay();
-                    AllPieces.Add(newPawn);
-                    AllPieces.Remove(atStart);
+                    AllPieces1.Add(newPawn);
+                    AllPieces1.Remove(atStart);
                     atStart = newPawn;
                 }
 
@@ -163,9 +148,9 @@ namespace Chess.Basic
                         start.ToCoor(),
                         finish.ToCoor(), atEnd != null ? atEnd.Color + " " + atEnd.Name + " has been taken" : "");
                 _cachePossibleMove.Clear();
-                _moveNumber++;
+                MoveNumber++;
                 MoveHistory.AddLast(new Tuple<Point2D, Point2D, bool>(start, finish, atEnd != null));
-                _currentInPlay = Util.ConverToOpposite(_currentInPlay);
+                CurrentInPlay = Util.ConverToOpposite(CurrentInPlay);
                 return atEnd;
             }
 
@@ -184,20 +169,18 @@ namespace Chess.Basic
             return Move(moves.Item1, moves.Item2);
         }
 
-        public List<Tuple<Piece, Point2D>> GetAllPossibleMoves(Color color) =>
-            GetAllPossibleMoves().FindAll(tuple => tuple.Item1.Color == color);
+        public List<Tuple<Piece, Point2D>> GetAllPossibleMoves(Color color)
+        {
+            return GetAllPossibleMoves().FindAll(tuple => tuple.Item1.Color == color);
+        }
 
         public List<Tuple<Piece, Point2D>> GetAllPossibleMoves()
         {
-            List<Tuple<Piece, Point2D>> list = new List<Tuple<Piece, Point2D>>();
-            var piecesInPlay = AllPieces.FindAll(p => p.InPlay);
+            var list = new List<Tuple<Piece, Point2D>>();
+            var piecesInPlay = AllPieces1.FindAll(p => p.InPlay);
             foreach (var piece in piecesInPlay)
-            {
-                foreach (var d in GetAllPossibleMovesPerPiece(piece.PositionPoint2D))
-                {
-                    list.Add(new Tuple<Piece, Point2D>(piece, d));
-                }
-            }
+            foreach (var d in GetAllPossibleMovesPerPiece(piece.PositionPoint2D))
+                list.Add(new Tuple<Piece, Point2D>(piece, d));
 
             return list;
         }
@@ -216,13 +199,10 @@ namespace Chess.Basic
                 return _cachePossibleMove[position];
             }
 
-            Piece piece = GetAt(position);
-            if (piece == null)
-            {
-                return new Point2D[0];
-            }
+            var piece = GetAt(position);
+            if (piece == null) return new Point2D[0];
 
-            List<Point2D> allPossible = new List<Point2D>();
+            var allPossible = new List<Point2D>();
 
             if (piece is Pawn pawn)
             {
@@ -246,10 +226,8 @@ namespace Chess.Basic
                     foreach (var jump in pawn.FirstMoveSet)
                     {
                         var tmp = position + jump;
-                        if (!OutOfBounds(tmp) && GetAt(tmp) == null && GetAt(position + (jump / 2)) == null)
-                        {
+                        if (!OutOfBounds(tmp) && GetAt(tmp) == null && GetAt(position + jump / 2) == null)
                             allPossible.Add(tmp);
-                        }
                     }
             }
             else
@@ -281,27 +259,24 @@ namespace Chess.Basic
         public void GetStats()
         {
             var tmpWinner = Rules.CheckCheckMate(this);
-            int numberOfBlackInPlay = AllPieces.FindAll(p => p.InPlay && p.Color == Color.Black).Count;
-            int numberOfWhiteInplay = AllPieces.FindAll(p => p.InPlay && p.Color == Color.White).Count;
+            var numberOfBlackInPlay = AllPieces1.FindAll(p => p.InPlay && p.Color == Color.Black).Count;
+            var numberOfWhiteInplay = AllPieces1.FindAll(p => p.InPlay && p.Color == Color.White).Count;
         }
 
         public void PrintBoardToPrinter()
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             builder.Append(" |");
-            for (int y = 0; y < 8; y++)
-            {
-                builder.Append(Util.ConvertNumberToLetter(y) + "|");
-            }
+            for (var y = 0; y < 8; y++) builder.Append(Util.ConvertNumberToLetter(y) + "|");
 
             builder.Append("\n");
 
 
-            for (int x = 0; x < 8; x++)
+            for (var x = 0; x < 8; x++)
             {
-                builder.Append((x + 1) + "|");
+                builder.Append(x + 1 + "|");
 
-                for (int y = 0; y < 8; y++)
+                for (var y = 0; y < 8; y++)
                 {
                     var piece = _board[y, x];
                     builder.Append(piece == null
@@ -318,9 +293,9 @@ namespace Chess.Basic
             Printer.AddToPrinter(builder.ToString());
         }
 
-        public static Board RecreateFromHistory(LinkedListNode<Tuple<Point2D,Point2D,bool>> node)
+        public static Board RecreateFromHistory(LinkedListNode<Tuple<Point2D, Point2D, bool>> node)
         {
-            Board board = new Board();
+            var board = new Board();
             var current = node.List.First;
             do
             {
@@ -331,10 +306,11 @@ namespace Chess.Basic
 
             return board;
         }
+
         public static LinkedList<Piece> PieceFromHistory(LinkedListNode<Tuple<Point2D, Point2D, bool>> node)
         {
-            LinkedList<Piece> list = new LinkedList<Piece>();
-            Board board = new Board();
+            var list = new LinkedList<Piece>();
+            var board = new Board();
             var current = node.List.First;
             do
             {
@@ -350,19 +326,16 @@ namespace Chess.Basic
         public void PrintBoard()
         {
             Console.Write(" |");
-            for (int y = 0; y < 8; y++)
-            {
-                Console.Write(Util.ConvertNumberToLetter(y) + "|");
-            }
+            for (var y = 0; y < 8; y++) Console.Write(Util.ConvertNumberToLetter(y) + "|");
 
             Console.WriteLine("");
 
 
-            for (int x = 0; x < 8; x++)
+            for (var x = 0; x < 8; x++)
             {
-                Console.Write((x + 1) + "|");
+                Console.Write(x + 1 + "|");
 
-                for (int y = 0; y < 8; y++)
+                for (var y = 0; y < 8; y++)
                 {
                     var piece = _board[y, x];
                     Console.Write(piece == null

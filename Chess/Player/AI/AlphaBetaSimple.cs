@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
 using Chess.Basic;
 using Chess.Utils;
 
@@ -12,15 +9,15 @@ namespace Chess.Player.AI
 {
     public class AlphaBetaSimple : PlayerAbstract
     {
-        private BoardEval _boardEval;
+        private readonly BoardEval _boardEval;
+
+        private readonly int _depth;
 
         public AlphaBetaSimple(AlphaBetaSimple playerAbstract, Board board) : base(playerAbstract, board)
         {
             _boardEval = playerAbstract._boardEval;
             _depth = playerAbstract._depth;
         }
-
-        int _depth;
 
         public AlphaBetaSimple(Board board, Color color, int depth = 3, BoardEval boardEval = BoardEval.Simple) : base(
             board, color, "Alpha Beta Simple" + depth)
@@ -58,13 +55,9 @@ namespace Chess.Player.AI
             if (depth == 0 || Rules.GameFinished(node.Board))
             {
                 if (Rules.CheckCheckMate(node.Board))
-                {
                     node.Score = color == Color ? 1000 : -1000;
-                }
                 else
-                {
                     node.Score = BoardEvalMethod.GetEvalFunc(_boardEval).Invoke(node.Board, Color);
-                }
 
                 return node.Score;
             }
@@ -77,10 +70,7 @@ namespace Chess.Player.AI
                     v = Math.Max(v, AlpaBetaMinimax(childNode, alpha, beta, depth - 1, Util.ConverToOpposite(color)));
                     alpha = Math.Max(v, alpha);
                     node.Score = alpha;
-                    if (beta <= alpha)
-                    {
-                        break;
-                    }
+                    if (beta <= alpha) break;
                 }
 
                 return v;
@@ -106,45 +96,33 @@ namespace Chess.Player.AI
 
         private void PrintTreeStart(Node node)
         {
-            while (node.PreviousNode != null)
-            {
-                node = node.PreviousNode;
-            }
+            while (node.PreviousNode != null) node = node.PreviousNode;
 
             PrintNode(node, 0);
         }
 
         private void PrintNode(Node node, int depth)
         {
-            string tmp = "";
-            for (int i = 0; i < depth * 3; i++)
-            {
-                tmp += "-";
-            }
+            var tmp = "";
+            for (var i = 0; i < depth * 3; i++) tmp += "-";
 
             tmp += node.Score;
-            if (node.Score == 0)
-            {
-                return;
-            }
+            if (node.Score == 0) return;
             Debug.WriteLine(tmp);
-            foreach (Node node1 in node.childerNodes ?? new List<Node>())
-            {
-                PrintNode(node1, depth + 1);
-            }
+            foreach (var node1 in node.childerNodes ?? new List<Node>()) PrintNode(node1, depth + 1);
         }
 
-        public override PlayerAbstract Clone(Board board) => new AlphaBetaSimple(this, board);
+        public override PlayerAbstract Clone(Board board)
+        {
+            return new AlphaBetaSimple(this, board);
+        }
 
         public override Tuple<Point2D, Point2D> GetMove()
         {
             _stopwatch.Start();
-            Node start = new Node(_depth, Board,_boardEval);
-            AlpaBetaMinimax(start, -float.MaxValue, float.MaxValue, _depth, this.Color);
-            if (start.childerNodes == null)
-            {
-                return new RandomAI(Board, Color).GetMove();
-            }
+            var start = new Node(_depth, Board, _boardEval);
+            AlpaBetaMinimax(start, -float.MaxValue, float.MaxValue, _depth, Color);
+            if (start.childerNodes == null) return new RandomAI(Board, Color).GetMove();
 
             PrintTreeStart(start);
             var max = start.childerNodes.Max(node => node.Score);

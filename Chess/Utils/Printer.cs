@@ -6,7 +6,7 @@ namespace Chess.Utils
 {
     public class Printer
     {
-        private static ConcurrentQueue<string> _stack = new ConcurrentQueue<string>();
+        private static readonly ConcurrentQueue<string> _stack = new ConcurrentQueue<string>();
 
         public static void AddToPrinter(string message)
         {
@@ -15,8 +15,8 @@ namespace Chess.Utils
 
         public static void Start()
         {
-            Timer timer = new Timer(100);
-            timer.Elapsed += delegate(object sender, ElapsedEventArgs args)
+            var timer = new Timer(100);
+            timer.Elapsed += delegate
             {
                 while (!_stack.IsEmpty)
                 {

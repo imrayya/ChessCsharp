@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Chess.Basic;
-using Chess.Basic.Pieces;
 
 namespace Chess.Player.AI
 {
     public class SimpleMonty : PlayerAbstract
     {
-        private int _MontyGames;
+        private readonly BoardEval _boardEval;
+        private readonly int _MontyGames;
 
         public SimpleMonty(SimpleMonty player, Board board) : base(player, board)
         {
             _boardEval = player._boardEval;
         }
-
-        private BoardEval _boardEval;
 
         public SimpleMonty(Board board, Color color, int numberOfSimsPerMove = 50) : base(board, color, "Simple Monty")
         {
@@ -26,8 +23,8 @@ namespace Chess.Player.AI
         {
             Stopwatch.Start();
 
-            List<Piece> pieces = Board.GetAllColored(Color);
-            List<Tuple<Piece, Point2D>> possibleMoves = Board.GetAllPossibleMoves();
+            var pieces = Board.GetAllColored(Color);
+            var possibleMoves = Board.GetAllPossibleMoves();
             possibleMoves = possibleMoves.FindAll(tuple => tuple.Item1.Color == Color);
 
             Tuple<Point2D, Point2D> bestMove = null;
@@ -41,10 +38,10 @@ namespace Chess.Player.AI
 
                 tmpBoard.Move(newGameMove.Item1, newGameMove.Item2);
                 //take the negative as AI plays as black
-                Tuple<Color, int, long, long>[] games = GameLoop.Games(tmpBoard, new RandomAI(tmpBoard, Color.White),
+                var games = GameLoop.Games(tmpBoard, new RandomAI(tmpBoard, Color.White),
                     new RandomAI(tmpBoard, Color.Black), _MontyGames);
                 var wins = games.Count(a => a.Item1 == Color);
-                var currentVal = (wins / (double) _MontyGames);
+                var currentVal = wins / (double) _MontyGames;
                 if (currentVal > bestValue)
                 {
                     bestValue = currentVal;
