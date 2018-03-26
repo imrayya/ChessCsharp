@@ -51,14 +51,16 @@ namespace Chess.Player.AI
         public static int EvalBoardShannon(Board board, Color color)
         {
             float score = 0;
-            board.AllPieces1.FindAll(piece=>piece.InPlay).ForEach(piece =>
+            board.AllPieces1.FindAll(piece => piece.InPlay).ForEach(piece =>
                 score += piece.Color == color ? ShannonPieceEval(piece) : -ShannonPieceEval(piece));
             var moves = board.GetAllPossibleMoves();
             var tmp = moves.FindAll(tuple => tuple.Item1.Color == color).Count;
             score += 0.1f * (tmp - (moves.Count - tmp));
             var pawnThatCanMove = moves.FindAll(tuple => tuple.Item1 is Pawn).ConvertAll(tuple => tuple.Item1);
-            score -= 0.5f * (board.AllPieces1.Except(pawnThatCanMove).ToList().FindAll(piece=>piece.Color==color).Count());
-            score += 0.5f * (board.AllPieces1.Except(pawnThatCanMove).ToList().FindAll(piece=>piece.Color!=color).Count());
+            score -= 0.5f * (board.AllPieces1.Except(pawnThatCanMove).ToList().FindAll(piece => piece.Color == color)
+                         .Count());
+            score += 0.5f * (board.AllPieces1.Except(pawnThatCanMove).ToList().FindAll(piece => piece.Color != color)
+                         .Count());
 
             return (int) score;
         }
@@ -115,10 +117,12 @@ namespace Chess.Player.AI
         {
             return board.AllPieces1.FindAll(a => a.InPlay).Sum(a =>
                 a.Color == color ? NaiveTableEval(a) : NaiveTableEval(a) * -1);
-        }public static int EvalBoardTable(Board board, Color color)
+        }
+
+        public static int EvalBoardTable(Board board, Color color)
         {
             return board.AllPieces1.FindAll(a => a.InPlay).Sum(a =>
-                a.Color == color ? NaiveTableEval(a)+NaiveEval(a) : (NaiveTableEval(a)+NaiveEval(a)) * -1);
+                a.Color == color ? NaiveTableEval(a) + NaiveEval(a) : (NaiveTableEval(a) + NaiveEval(a)) * -1);
         }
 
         private static int NaiveTableEval(Piece piece)

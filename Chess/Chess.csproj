@@ -38,6 +38,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Basic\Pair.cs" />
+    <Compile Include="Player\AI\AlphaBeta.cs" />
+    <Compile Include="Player\AI\AlphaBetaSimple.cs" />
     <Compile Include="Player\AI\Greedy1Ply.cs" />
     <Compile Include="Player\AI\Greedy1PlyMod.cs" />
     <Compile Include="Player\AI\Greedy2Ply.cs" />

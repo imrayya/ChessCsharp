@@ -17,8 +17,8 @@ namespace Chess
             Printer.AddToPrinter("Hello World");
             Board board = new Board();
             board.PrintBoardToPrinter();
-            PlayerAbstract white = new Human(board, Color.White);
-            PlayerAbstract black = new GreedyNPly(board, Color.Black, 5);
+            PlayerAbstract white = new RandomAI(board, Color.White);
+            PlayerAbstract black = new AlphaBetaSimple(board,Color.Black);
             Tuple<Color, int, long, long>[] gamesResult = GameLoop.Games(board, white, black, 1, boardPrint: true);
             var count = gamesResult.Length;
             Printer.AddToPrinter("Number of games played: " + count);
@@ -33,6 +33,7 @@ namespace Chess
             Printer.AddToPrinter(gamesResult.Average(a => a.Item4) + "ms need on average for black ("+black.Name+")");
 
             Thread.Sleep(1000);
+            Console.ReadLine();
         }
     }
 }

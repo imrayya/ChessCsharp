@@ -10,14 +10,11 @@ using Chess.Utils;
 
 namespace Chess.Player.AI
 {
-    public class AlphaBeta : PlayerAbstract
+    public class AlphaBetaSimple : PlayerAbstract
     {
-        private Dictionary<Tuple<int, Point2D, Point2D>, float> move =
-            new Dictionary<Tuple<int, Point2D, Point2D>, float>();
-
         private BoardEval _boardEval;
 
-        public AlphaBeta(AlphaBeta playerAbstract, Board board) : base(playerAbstract, board)
+        public AlphaBetaSimple(AlphaBetaSimple playerAbstract, Board board) : base(playerAbstract, board)
         {
             _boardEval = playerAbstract._boardEval;
             _depth = playerAbstract._depth;
@@ -25,8 +22,8 @@ namespace Chess.Player.AI
 
         int _depth;
 
-        public AlphaBeta(Board board, Color color, int depth = 3, BoardEval boardEval = BoardEval.Simple) : base(
-            board, color, "Alpha Beta " + depth)
+        public AlphaBetaSimple(Board board, Color color, int depth = 3, BoardEval boardEval = BoardEval.Simple) : base(
+            board, color, "Alpha Beta Simple" + depth)
         {
             _boardEval = boardEval;
             _depth = depth;
@@ -130,7 +127,6 @@ namespace Chess.Player.AI
             {
                 return;
             }
-
             Debug.WriteLine(tmp);
             foreach (Node node1 in node.childerNodes ?? new List<Node>())
             {
@@ -138,12 +134,12 @@ namespace Chess.Player.AI
             }
         }
 
-        public override PlayerAbstract Clone(Board board) => new AlphaBeta(this, board);
+        public override PlayerAbstract Clone(Board board) => new AlphaBetaSimple(this, board);
 
         public override Tuple<Point2D, Point2D> GetMove()
         {
             _stopwatch.Start();
-            Node start = new Node(_depth, Board);
+            Node start = new Node(_depth, Board,_boardEval);
             AlpaBetaMinimax(start, -float.MaxValue, float.MaxValue, _depth, this.Color);
             if (start.childerNodes == null)
             {

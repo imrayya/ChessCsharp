@@ -162,11 +162,16 @@ namespace Visual
             trackBar1.SetRange(0, 1);
             _current = 0;
             Board.Add(tmp);
-            PlayerAbstract whitePlayer = new Greedy1Ply(tmp, Chess.Basic.Color.White);
-            PlayerAbstract blackPlayer = new GreedyNPly(tmp, Chess.Basic.Color.Black, 5);
-            labelBlack.Text = blackPlayer.Name;
-            labelWhite.Text = whitePlayer.Name;
+                        PlayerAbstract whitePlayer =
+                            new AlphaBetaSimple(tmp, Chess.Basic.Color.White, depth: 2, boardEval: BoardEval.SimpleTable);
+                        PlayerAbstract blackPlayer =
+                            new AlphaBetaSimple(tmp, Chess.Basic.Color.Black, depth: 2, boardEval: BoardEval.Table);
+//            PlayerAbstract whitePlayer = new RandomAI(tmp, Chess.Basic.Color.White);
+//            PlayerAbstract blackPlayer = new Greedy1Ply(tmp, Chess.Basic.Color.Black);
+
             var result = GameLoop.Game(tmp, whitePlayer, blackPlayer, this);
+            labelBlack.Text = blackPlayer.Name + " " + result.Item4 + "ms";
+            labelWhite.Text = whitePlayer.Name + " " + result.Item3 + "ms";
             MessageBox.Show(result.Item1 == Chess.Basic.Color.NoColor ? "Draw" : "Winner is " + result.Item1);
         }
 

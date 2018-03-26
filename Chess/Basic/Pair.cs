@@ -1,9 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Chess.Basic
 {
     public struct Pair<T1, T2>
     {
+
+        public Tuple<T1, T2> ToTuple()
+        {
+            return new Tuple<T1, T2>(Left,Right);
+        }
         public bool Equals(Pair<T1, T2> other)
         {
             return EqualityComparer<T1>.Default.Equals(Left, other.Left) &&

@@ -36,7 +36,7 @@ namespace Chess.Player.AI
             //var newGameMoves = game.ugly_moves();
             Tuple<Point2D, Point2D> bestMove = _randomAi.GetMove();
             //use any negative large number
-            var bestValue = -999999;
+            var bestValue = BoardEvalMethod.GetEvalFunc(_boardEval).Invoke(Board, Color);
 
             for (var i = 0; i < possibleMoves.Count; i++)
             {

@@ -142,7 +142,20 @@ namespace Chess.Basic
 
                 var atEnd = GetAt(finish);
                 atEnd?.OutOfPlay();
+
+
                 atStart.PositionPoint2D = finish;
+                if (atStart is Pawn && atStart.Rank == 8)
+                {
+                    var newPawn = new Queen(atStart.PositionPoint2D, atStart.Color);
+                    _board[atStart.PositionPoint2D.X, atStart.PositionPoint2D.Y] =
+                        newPawn;
+                    atStart.OutOfPlay();
+                    AllPieces.Add(newPawn);
+                    AllPieces.Remove(atStart);
+                    atStart = newPawn;
+                }
+
                 _board[finish.X, finish.Y] = atStart;
                 _board[start.X, start.Y] = null;
                 if (PrintDebug)
@@ -161,10 +174,18 @@ namespace Chess.Basic
             throw new IllegalMove(start, finish);
         }
 
+        public Piece Move(Tuple<Piece, Point2D> move)
+        {
+            return Move(move.Item1.PositionPoint2D, move.Item2);
+        }
+
         public Piece Move(Tuple<Point2D, Point2D> moves)
         {
             return Move(moves.Item1, moves.Item2);
         }
+
+        public List<Tuple<Piece, Point2D>> GetAllPossibleMoves(Color color) =>
+            GetAllPossibleMoves().FindAll(tuple => tuple.Item1.Color == color);
 
         public List<Tuple<Piece, Point2D>> GetAllPossibleMoves()
         {
@@ -217,7 +238,7 @@ namespace Chess.Basic
                 {
                     var tmp = position + attack;
 
-                    if (!OutOfBounds(tmp) && GetAt(tmp) != null)
+                    if (!OutOfBounds(tmp) && GetAt(tmp) != null && GetAt(tmp).Color != pawn.Color)
                         allPossible.Add(tmp);
                 }
 
@@ -295,6 +316,35 @@ namespace Chess.Basic
             }
 
             Printer.AddToPrinter(builder.ToString());
+        }
+
+        public static Board RecreateFromHistory(LinkedListNode<Tuple<Point2D,Point2D,bool>> node)
+        {
+            Board board = new Board();
+            var current = node.List.First;
+            do
+            {
+                board.Move(current.Value.Item1, current.Value.Item2);
+                current = current.Next;
+                if (current == null) throw new Exception("Add a real description");
+            } while (current != node);
+
+            return board;
+        }
+        public static LinkedList<Piece> PieceFromHistory(LinkedListNode<Tuple<Point2D, Point2D, bool>> node)
+        {
+            LinkedList<Piece> list = new LinkedList<Piece>();
+            Board board = new Board();
+            var current = node.List.First;
+            do
+            {
+                list.AddLast(board.GetAt(current.Value.Item1));
+                board.Move(current.Value.Item1, current.Value.Item2);
+                current = current.Next;
+                if (current == null) throw new Exception("Add a real description");
+            } while (current != node);
+
+            return list;
         }
 
         public void PrintBoard()

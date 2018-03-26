@@ -8,14 +8,17 @@
         private readonly string _name;
         private Point2D[] _moveSet;
 
+        public bool LightColor => FlagsHelper.IsInSet(_flags, PieceEnum.LightColor);
         public bool InPlay => FlagsHelper.IsInSet(_flags, PieceEnum.InPlay);
         public bool FirstMove => FlagsHelper.IsInSet(_flags, PieceEnum.FirstMove);
         public bool MoveRepeat => FlagsHelper.IsInSet(_flags, PieceEnum.MoveRepeat);
+        public int Rank => PositionPoint2D.Y - (Color == Color.Black ? 8 : 0);
         public Point2D[] MoveSet => _moveSet;
         public string Letter => _letter;
         public string Name => _name;
         protected void SetMoveSet(Point2D[] moveSet) => _moveSet = moveSet;
         public Color Color { get; }
+
         public Point2D PositionPoint2D
         {
             get => _positionPoint2D;
@@ -23,6 +26,14 @@
             {
                 _positionPoint2D = value;
                 FlagsHelper.Set(ref _flags, PieceEnum.FirstMove);
+                if (value.X % 2 == value.Y % 2)
+                {
+                    FlagsHelper.Set(ref _flags, PieceEnum.LightColor);
+                }
+                else
+                {
+                    FlagsHelper.Unset(ref _flags, PieceEnum.LightColor);
+                }
             }
         }
 
@@ -46,11 +57,19 @@
             _letter = letter;
             _positionPoint2D = positionPoint2D;
             Color = color;
+            if (positionPoint2D.X % 2 == positionPoint2D.Y % 2)
+            {
+                FlagsHelper.Set(ref _flags, PieceEnum.LightColor);
+            }
+            else
+            {
+                FlagsHelper.Unset(ref _flags, PieceEnum.LightColor);
+            }
         }
 
         public Piece OutOfPlay()
         {
-            FlagsHelper.Unset(ref _flags,PieceEnum.InPlay);
+            FlagsHelper.Unset(ref _flags, PieceEnum.InPlay);
             return this;
         }
 
